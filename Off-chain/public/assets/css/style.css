@@ -1,0 +1,449 @@
+/* public/assets/css/style.css */
+:root {
+    --primary-color: #2a5a5b;     /* Vert Ardoise / Turquoise chaud (Professionnel et organique) */
+    --primary-hover: #1e3f40;
+    --accent-color: #d97706;      /* Ambre / Terracotta atténué pour les faits saillants */
+    --text-main: #1f2937;         /* Anthracite pour une lisibilité parfaite */
+    --text-muted: #4b5563;
+    --bg-main: #fafaf9;           /* Fond pierre chaude très doux pour les yeux */
+    --bg-card: #ffffff;
+    --border-color: #e5e7eb;
+    --font-stack: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+}
+
+/* Reset de base léger */
+*, *::before, *::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: var(--font-stack);
+    background-color: var(--bg-main);
+    color: var(--text-main);
+    line-height: 1.5;
+    padding-bottom: 60px; /* Espace pour le footer fixe */
+}
+
+.container {
+    width: 100%;
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 0 16px;
+}
+
+/* Barre de Navigation */
+header {
+    background-color: var(--bg-card);
+    border-bottom: 1px solid var(--border-color);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+
+nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    height: 64px;
+}
+
+.logo {
+    font-size: 1.25rem;
+    color: var(--primary-color);
+}
+
+.logo .tagline {
+    font-size: 0.9rem;
+    color: var(--text-muted);
+    font-weight: normal;
+}
+
+.lang-selector select {
+    padding: 6px 12px;
+    border-radius: 6px;
+    border: 1px solid var(--border-color);
+    background-color: var(--bg-card);
+    font-family: inherit;
+    font-size: 0.9rem;
+    color: var(--text-main);
+    cursor: pointer;
+}
+
+/* Section Bannière (Hero) */
+.hero {
+    padding: 48px 16px;
+    text-align: center;
+    background: linear-gradient(135deg, #eef2f3 0%, #e0e7ff 100%);
+    border-radius: 12px;
+    margin-top: 24px;
+    margin-bottom: 40px;
+}
+
+.hero h1 {
+    font-size: 2rem;
+    font-weight: 800;
+    color: var(--primary-color);
+    margin-bottom: 16px;
+    line-height: 1.2;
+}
+
+.hero p {
+    font-size: 1.1rem;
+    color: var(--text-muted);
+    max-width: 700px;
+    margin: 0 auto 24px auto;
+}
+
+.actions {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+/* Boutons */
+.btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 10px 20px;
+    font-size: 0.95rem;
+    font-weight: 600;
+    border-radius: 6px;
+    text-decoration: none;
+    transition: background-color 0.2s, transform 0.1s;
+    cursor: pointer;
+    border: none;
+}
+
+.btn-primary {
+    background-color: var(--primary-color);
+    color: white;
+}
+
+.btn-primary:hover {
+    background-color: var(--primary-hover);
+}
+
+.btn-secondary {
+    background-color: transparent;
+    color: var(--primary-color);
+    border: 1px solid var(--primary-color);
+}
+
+.btn-secondary:hover {
+    background-color: #f0fdfa;
+}
+
+/* Grille des Entrepreneurs */
+.entrepreneurs h2 {
+    font-size: 1.5rem;
+    color: var(--primary-color);
+    margin-bottom: 24px;
+    border-left: 4px solid var(--accent-color);
+    padding-left: 10px;
+}
+
+.grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 20px;
+}
+
+/* Cartes de Profil (Aperçus) */
+.card {
+    background-color: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+}
+
+.card-header {
+    margin-bottom: 12px;
+}
+
+.card-title {
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: var(--text-main);
+}
+
+.card-meta {
+    font-size: 0.85rem;
+    color: var(--accent-color);
+    font-weight: 600;
+    margin-top: 2px;
+}
+
+.card-body {
+    font-size: 0.9rem;
+    color: var(--text-muted);
+    margin-bottom: 16px;
+    flex-grow: 1;
+}
+
+.card-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-top: 1px solid var(--border-color);
+    padding-top: 12px;
+    font-size: 0.85rem;
+    color: var(--text-muted);
+}
+
+.card-stats span {
+    margin-right: 10px;
+}
+
+/* Pied de page fixe */
+footer {
+    background-color: var(--bg-card);
+    border-top: 1px solid var(--border-color);
+    padding: 20px 0;
+    text-align: center;
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+}
+
+/* Optimisations pour téléphones mobiles */
+@media (max-width: 640px) {
+    .hero h1 {
+        font-size: 1.6rem;
+    }
+    .hero p {
+        font-size: 1rem;
+    }
+    .actions .btn {
+        width: 100%; /* Boutons en pleine largeur sur mobile pour plus d'accessibilité tactile */
+    }
+}
+
+/* Styles pour le Formulaire de Profil et le Module Audio */
+.profile-creation {
+    margin-top: 40px;
+    margin-bottom: 60px;
+}
+
+.profile-creation h2 {
+    font-size: 1.5rem;
+    color: var(--primary-color);
+    margin-bottom: 20px;
+    border-left: 4px solid var(--accent-color);
+    padding-left: 10px;
+}
+
+.form-container {
+    background-color: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 24px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+}
+
+.form-group {
+    margin-bottom: 20px;
+    display: flex;
+    flex-direction: column;
+}
+
+.form-group label {
+    font-size: 0.95rem;
+    font-weight: 600;
+    margin-bottom: 6px;
+    color: var(--text-main);
+}
+
+.form-group input, 
+.form-group select, 
+.form-group textarea {
+    padding: 10px 12px;
+    border-radius: 6px;
+    border: 1px solid var(--border-color);
+    font-family: inherit;
+    font-size: 0.95rem;
+    background-color: #fefefe;
+    color: var(--text-main);
+}
+
+.form-group input:focus, 
+.form-group select:focus, 
+.form-group textarea:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(42, 90, 91, 0.1);
+}
+
+/* Module Audio Spécifique */
+.audio-module {
+    background-color: #f3f4f6;
+    border: 1px dashed #cbd5e1;
+    border-radius: 8px;
+    padding: 20px;
+    margin-bottom: 24px;
+}
+
+.audio-module h3 {
+    font-size: 1.1rem;
+    color: var(--primary-color);
+    margin-bottom: 4px;
+}
+
+.help-text {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    margin-bottom: 16px;
+}
+
+.audio-controls {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 16px;
+}
+
+.status-indicator {
+    width: 12px;
+    height: 12px;
+    background-color: #ef4444;
+    border-radius: 50%;
+    display: inline-block;
+    animation: pulse 1.2s infinite;
+}
+
+@keyframes pulse {
+    0% { opacity: 1; }
+    50% { opacity: 0.4; }
+    100% { opacity: 1; }
+}
+
+.bg-music-selector {
+    margin-top: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.bg-music-selector label {
+    font-size: 0.85rem;
+    font-weight: 600;
+}
+
+.bg-music-selector select {
+    padding: 8px;
+    border-radius: 6px;
+    border: 1px solid var(--border-color);
+    font-size: 0.9rem;
+}
+
+.audio-preview {
+    margin-top: 16px;
+    padding-top: 16px;
+    border-top: 1px solid #e5e7eb;
+}
+
+.audio-preview audio {
+    width: 100%;
+    margin-top: 8px;
+}
+
+/* Boîte d'explication du Certificat (NFT) */
+.nft-explanation-box {
+    background-color: #fef3c7; /* Jaune très doux pour attirer l'attention de façon positive */
+    border-left: 4px solid var(--accent-color);
+    padding: 16px;
+    border-radius: 0 8px 8px 0;
+    margin-bottom: 24px;
+}
+
+.nft-explanation-box h3 {
+    font-size: 1rem;
+    color: #92400e;
+    margin-bottom: 6px;
+}
+
+.nft-explanation-box p {
+    font-size: 0.85rem;
+    color: #78350f;
+    line-height: 1.4;
+}
+
+.form-actions {
+    text-align: right;
+}
+
+/* Utilitaires */
+.hidden {
+    display: none !important;
+}
+
+.auth-box {
+    max-width: 450px;
+    margin: 40px auto;
+    background-color: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 30px;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+}
+.auth-box h1 {
+    font-size: 1.5rem;
+    color: var(--primary-color);
+    text-align: center;
+    margin-bottom: 6px;
+}
+.auth-box .subtitle {
+    font-size: 0.9rem;
+    color: var(--text-muted);
+    text-align: center;
+    margin-bottom: 24px;
+}
+.w-full {
+    width: 100%;
+}
+.divider {
+    text-align: center;
+    margin: 20px 0;
+    position: relative;
+}
+.divider::before {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background-color: var(--border-color);
+    z-index: 1;
+}
+.divider span {
+    background-color: var(--bg-card);
+    padding: 0 10px;
+    position: relative;
+    z-index: 2;
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    font-weight: bold;
+}
+.auth-redirect {
+    text-align: center;
+    margin-top: 20px;
+    font-size: 0.9rem;
+}
+.auth-redirect a {
+    color: var(--primary-color);
+    font-weight: 600;
+    text-decoration: none;
+}
+.auth-redirect a:hover {
+    text-decoration: underline;
+}
