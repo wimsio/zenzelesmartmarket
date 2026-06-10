@@ -1,0 +1,8 @@
+# Ignorer les configurations de base de données contenant des mots de passe réels
+app/config/db.php
+
+# Ignorer les fichiers d'environnement ou clés privées Cardano
+.env
+*.priv
+*.skey
+*.vkey

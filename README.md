@@ -101,3 +101,11 @@ CTO Contact:
 Zenzele Smart Market aims to become **the decentralized people’s entrepreneurial market**. It gives ordinary people a place to present their skills, tell their stories, receive support, learn new skills, build trust, and become self-reliant through Cardano-powered ownership.
 
 **Zenzele Smart Market: Be self-reliant. Build your future. Share your work with the world.**
+
+
+ <div class="hero-card">
+        <p>Bienvenue sur votre profil, Mazalaza !</p>
+        <div class="profile-header-card">
+            <a href="donations.php" class="btn-add" class="edit-profile-btn" >+ Create a request</a>
+        </div>
+    </div>
