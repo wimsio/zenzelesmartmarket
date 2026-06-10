@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Profile – Zenzele Smart Market</title>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../css/style.css"/>
+  <style>
+    .source-badge { display:inline-flex;align-items:center;gap:6px;font-size:0.75rem;padding:4px 12px;border-radius:50px;margin-bottom:16px;font-weight:600; }
+    .badge-live   { background:#d1fae5;color:#065f46;border:1px solid #6ee7b7; }
+    .badge-demo   { background:#fef3c7;color:#92400e;border:1px solid #fcd34d; }
+    .skeleton-block { background:linear-gradient(90deg,#f0ebff 25%,#e8deff 50%,#f0ebff 75%);background-size:200% 100%;animation:shimmer 1.4s infinite;border-radius:12px;height:200px;margin-bottom:20px; }
+    @keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
+    .donation-item { display:flex;justify-content:space-between;align-items:center;padding:12px;border:1px solid var(--border);border-radius:8px;margin-bottom:8px; }
+    .donation-item .from { font-weight:600;font-size:0.88rem; }
+    .donation-item .amount { color:var(--green);font-family:var(--font-head);font-weight:700; }
+    .donation-item .msg { font-size:0.78rem;color:var(--text-muted);margin-top:2px; }
+  </style>
+</head>
+<body>
+
+<nav class="navbar">
+  <div class="nav-inner">
+    <a href="../index.html" class="logo"><span class="logo-z">Z</span>enzele <span class="logo-tag">Smart Market</span></a>
+    <div class="nav-links">
+      <a href="explore.html">← Explore</a>
+      <a href="dashboard.html">Dashboard</a>
+    </div>
+  </div>
+</nav>
+
+<div class="profile-page" id="profilePage">
+  <!-- Skeleton while loading -->
+  <div id="loadingSkeleton">
+    <div class="skeleton-block"></div>
+    <div class="skeleton-block" style="height:120px"></div>
+    <div class="skeleton-block" style="height:120px"></div>
+  </div>
+</div>
+
+<script src="../js/api-client.js"></script>
+<script src="../js/main.js"></script>
+<script>
+const params    = new URLSearchParams(window.location.search);
+const profileId = parseInt(params.get('id'));
+const viewer    = getUser(); // currently logged-in user (may be null)
+
+if (!profileId) window.location.href = 'explore.html';
+
+// ── Load profile ──────────────────────────────────────────────────────────
+async function loadProfile() {
+  await new Promise(r => setTimeout(r, 600)); // wait for backend check
+
+  let profile = null;
+  let source  = 'demo';
+
+  if (BACKEND_LIVE) {
+    try {
+      profile = await Profiles.get(profileId);
+      source  = 'mysql';
+    } catch(err) {
+      console.warn('Profiles.get failed, falling back to demo:', err.message);
+    }
+  }
+
+  // Fallback to localStorage demo data
+  if (!profile) {
+    profile = getProfiles().find(p => p.id === profileId);
+    if (!profile) {
+      document.getElementById('profilePage').innerHTML =
+        '<div class="alert alert-error">Profile not found. <a href="explore.html">Back to Explore</a></div>';
+      return;
+    }
+    // Increment view count locally
+    profile.views = (profile.views || 0) + 1;
+    saveProfile(profile);
+  }
+
+  // Parse skills if JSON string (from MySQL)
+  if (typeof profile.skills === 'string') {
+    try { profile.skills = JSON.parse(profile.skills); } catch { profile.skills = []; }
+  }
+
+  renderProfile(profile, source);
+}
+
+// ── Render full profile ───────────────────────────────────────────────────
+function renderProfile(p, source) {
+  const isOwn    = viewer && viewer.id === p.id;
+  const liked    = JSON.parse(localStorage.getItem('zenzele_liked')   || '[]').includes(p.id);
+  const followed = JSON.parse(localStorage.getItem('zenzele_followed')|| '[]').includes(p.id);
+  const nfts     = p.nfts || [];
+  const donations= p.recent_donations || [];
+  const skills   = Array.isArray(p.skills) ? p.skills : [];
+
+  document.title = `${p.name} – Zenzele Smart Market`;
+
+  document.getElementById('profilePage').innerHTML = `
+
+    <!-- Source badge -->
+    <div class="source-badge ${source==='mysql'?'badge-live':'badge-demo'}">
+      ${source==='mysql'?'🟢 Live from MySQL':'🟡 Demo data'}
+    </div>
+
+    <!-- Hero -->
+    <div class="profile-hero">
+      <div class="profile-avatar">${p.avatar || '🧑🏾‍💼'}</div>
+      <div class="profile-info" style="flex:1">
+        <h1>${p.name}</h1>
+        <div class="meta">
+          📍 ${p.city || p.location || 'Unknown'} · ${p.category || 'Entrepreneur'}
+          ${p.open_for_work || p.openForWork ? ' · <span style="color:var(--green)">✅ Open for Work</span>' : ''}
+        </div>
+        <p class="bio">${p.bio || ''}</p>
+        <div class="profile-tags">
+          ${skills.map(s=>`<span>${s}</span>`).join('')}
+          ${p.training_wanted || p.trainingWanted ? `<span>📚 Wants: ${p.training_wanted||p.trainingWanted}</span>` : ''}
+        </div>
+        <div class="profile-stats" style="margin-top:16px">
+          <div><strong>${p.followers||0}</strong><span>Followers</span></div>
+          <div><strong>${p.likes||0}</strong><span>Likes</span></div>
+          <div><strong>${p.views||0}</strong><span>Views</span></div>
+          <div><strong>${p.donation_count||p.donations||0}</strong><span>Donations</span></div>
+          <div><strong>${nfts.length}</strong><span>NFTs</span></div>
+        </div>
+
+        <!-- Action buttons -->
+        <div style="display:flex;gap:10px;margin-top:18px;flex-wrap:wrap">
+          ${!isOwn ? `
+            <button class="btn-sm" id="likeBtn"   onclick="doLike()">  ${liked?'❤️':'🤍'} ${p.likes||0}</button>
+            <button class="btn-sm" id="followBtn" onclick="doFollow()">${followed?'✅ Following':'👥 Follow'}</button>
+          ` : `
+            <a href="dashboard.html" class="btn-primary" style="font-size:0.85rem;padding:9px 20px">✏️ Edit My Profile</a>
+          `}
+          <button class="btn-primary" style="padding:9px 20px;font-size:0.85rem"
+            onclick="document.getElementById('donateSection').scrollIntoView({behavior:'smooth'})">
+            💰 Donate
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Wallet -->
+    ${p.wallet ? `
+    <div class="section-card">
+      <h3>💳 Cardano Wallet</h3>
+      <code style="font-size:0.82rem;color:var(--purple-light);word-break:break-all;line-height:1.8">${p.wallet}</code>
+    </div>` : ''}
+
+    <!-- Audio Pitch -->
+    <div class="section-card">
+      <h3>🎙️ Audio Story Pitch</h3>
+      ${p.audio_url || p.audioUrl ? `
+        <div class="audio-player">
+          <p style="font-size:0.85rem;color:var(--text-muted);margin-bottom:10px">Listen to ${p.name}'s story:</p>
+          <audio controls src="${p.audio_url||p.audioUrl}" style="width:100%"></audio>
+        </div>` : `
+        <p style="color:var(--text-muted);font-size:0.9rem">
+          No audio pitch recorded yet.
+          ${isOwn ? '<a href="dashboard.html" style="color:var(--purple-light);font-weight:600"> Add one in your dashboard →</a>' : ''}
+        </p>`}
+    </div>
+
+    <!-- NFTs -->
+    <div class="section-card">
+      <h3>🏆 Entrepreneur NFTs</h3>
+      ${nfts.length ? `
+        <div class="nft-grid">
+          ${nfts.map(n=>`
+            <div class="nft-card">
+              <div class="nft-icon">${n.icon||'🏆'}</div>
+              <h4>${n.title}</h4>
+              <small>${n.policy_id||n.policyId ? (n.policy_id||n.policyId).substring(0,16)+'...' : 'Cardano testnet'}</small>
+            </div>`).join('')}
+        </div>` : `
+        <p style="color:var(--text-muted);font-size:0.9rem">No NFTs minted yet.</p>`}
+    </div>
+
+    <!-- Donate -->
+    <div class="section-card" id="donateSection">
+      <h3>💰 Support ${p.name}</h3>
+      <p style="font-size:0.88rem;color:var(--text-muted);margin-bottom:18px">
+        Send ADA directly to ${p.name}'s Cardano wallet to help them grow their business.
+      </p>
+      <div id="donateAlert"></div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:12px">
+        <div class="form-group"><label>Amount (ADA)</label><input type="number" id="donateAmt" value="5" min="1"/></div>
+        <div class="form-group"><label>Your Name</label><input type="text" id="donorName" placeholder="Anonymous"/></div>
+      </div>
+      <div class="form-group"><label>Message (optional)</label>
+        <input type="text" id="donateMsg" placeholder="Keep it up! 🚀"/>
+      </div>
+      <button class="btn-primary" onclick="doDonate()">💰 Send Donation via Cardano</button>
+      <p style="font-size:0.72rem;color:var(--text-muted);margin-top:8px">
+        ⚠️ Currently simulated on testnet. Real Cardano transactions via Lucid coming soon.
+      </p>
+
+      <!-- Recent donations -->
+      ${donations.length ? `
+        <div style="margin-top:20px">
+          <h4 style="font-family:var(--font-head);font-size:0.9rem;margin-bottom:12px">Recent Supporters</h4>
+          ${donations.map(d=>`
+            <div class="donation-item">
+              <div>
+                <div class="from">${d.from_name||'Anonymous'}</div>
+                <div class="msg">${d.message||''}</div>
+              </div>
+              <div class="amount">₳ ${parseFloat(d.amount_ada||0).toFixed(2)}</div>
+            </div>`).join('')}
+        </div>` : ''}
+    </div>
+
+    <!-- Training -->
+    ${p.training_wanted||p.trainingWanted ? `
+    <div class="section-card">
+      <h3>📚 Training / Mentorship Wanted</h3>
+      <p style="font-size:0.9rem;color:var(--text-muted)">
+        ${p.name} is looking for help with:
+        <strong style="color:var(--purple)">${p.training_wanted||p.trainingWanted}</strong>
+      </p>
+      ${!isOwn ? `<button class="btn-primary" style="margin-top:14px" onclick="offerMentorship()">🤝 Offer to Mentor</button>` : ''}
+    </div>` : ''}
+
+    <!-- Share -->
+    <div class="section-card">
+      <h3>🔗 Share ${p.name}'s Profile</h3>
+      <div class="share-buttons">
+        <button class="share-btn share-wa" onclick="shareToWhatsApp(${p.id},'${p.name.replace(/'/g,"\\'")}')">💬 WhatsApp</button>
+        <button class="share-btn share-fb" onclick="shareToFacebook(${p.id})">📘 Facebook</button>
+        <button class="share-btn share-x"  onclick="shareToX(${p.id},'${p.name.replace(/'/g,"\\'")}')">𝕏 X/Twitter</button>
+        <button class="share-btn share-tg" onclick="shareToTelegram(${p.id},'${p.name.replace(/'/g,"\\'")}')">✈️ Telegram</button>
+        <button class="share-btn" style="background:var(--purple-light);color:white" onclick="copyProfileLink()">🔗 Copy Link</button>
+      </div>
+    </div>
+  `;
+}
+
+// ── Like ──────────────────────────────────────────────────────────────────
+async function doLike() {
+  if (!viewer) { showToast('Please log in to like profiles.', 'error'); return; }
+  try {
+    let nowLiked;
+    if (BACKEND_LIVE) {
+      const result = await Profiles.like(profileId);
+      nowLiked = result.liked;
+    } else {
+      nowLiked = toggleLike(profileId);
+    }
+    showToast(nowLiked ? '❤️ Liked!' : 'Unliked');
+    loadProfile(); // reload to get fresh counts
+  } catch(e) {
+    showToast(e.message, 'error');
+  }
+}
+
+// ── Follow ────────────────────────────────────────────────────────────────
+async function doFollow() {
+  if (!viewer) { showToast('Please log in to follow entrepreneurs.', 'error'); return; }
+  try {
+    let nowFollowed;
+    if (BACKEND_LIVE) {
+      const result = await Profiles.follow(profileId);
+      nowFollowed = result.following;
+    } else {
+      nowFollowed = toggleFollow(profileId);
+    }
+    showToast(nowFollowed ? '✅ Now following!' : 'Unfollowed');
+    loadProfile();
+  } catch(e) {
+    showToast(e.message, 'error');
+  }
+}
+
+// ── Donate ────────────────────────────────────────────────────────────────
+async function doDonate() {
+  const amt      = parseFloat(document.getElementById('donateAmt').value);
+  const fromName = document.getElementById('donorName').value.trim() || 'Anonymous';
+  const message  = document.getElementById('donateMsg').value.trim();
+  const alertEl  = document.getElementById('donateAlert');
+
+  if (!amt || amt <= 0) {
+    alertEl.innerHTML = '<div class="alert alert-error">Please enter a valid amount.</div>'; return;
+  }
+
+  try {
+    const result = await sendDonation(profileId, amt, message, fromName);
+    alertEl.innerHTML = `
+      <div class="alert alert-success">
+        ✅ Donation of ₳${amt} sent!<br/>
+        <small>Tx Ref: ${result.tx_ref||result.txRef} · ${result.network||'Cardano Testnet'}</small>
+      </div>`;
+    loadProfile(); // refresh donation count
+  } catch(e) {
+    alertEl.innerHTML = `<div class="alert alert-error">${e.message}</div>`;
+  }
+}
+
+// ── Mentorship offer ──────────────────────────────────────────────────────
+function offerMentorship() {
+  if (!viewer) { showToast('Please log in to offer mentorship.', 'error'); return; }
+  showToast('🤝 Mentorship offer sent! They will be notified.');
+}
+
+// ── Copy link ─────────────────────────────────────────────────────────────
+function copyProfileLink() {
+  navigator.clipboard.writeText(window.location.href)
+    .then(() => showToast('🔗 Profile link copied!'))
+    .catch(() => showToast('Could not copy — try manually.', 'error'));
+}
+
+// ── Init ──────────────────────────────────────────────────────────────────
+loadProfile();
+</script>
+</body>
+</html>

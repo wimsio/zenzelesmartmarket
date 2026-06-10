@@ -1,0 +1,655 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Dashboard – Zenzele Smart Market</title>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../css/style.css"/>
+  <style>
+    .source-badge{display:inline-flex;align-items:center;gap:6px;font-size:0.75rem;padding:4px 12px;border-radius:50px;margin-bottom:16px;font-weight:600}
+    .badge-live{background:#d1fae5;color:#065f46;border:1px solid #6ee7b7}
+    .badge-demo{background:#fef3c7;color:#92400e;border:1px solid #fcd34d}
+    .completion-track{background:rgba(255,255,255,0.12);border-radius:50px;height:7px}
+    .completion-fill{background:linear-gradient(90deg,var(--gold),var(--green));height:7px;border-radius:50px;transition:width 0.8s cubic-bezier(0.22,1,0.36,1)}
+    .chip{font-size:0.72rem;padding:3px 12px;border-radius:50px;cursor:pointer;border:1px solid;display:inline-block;margin:3px}
+    .chip-done{background:rgba(0,200,150,0.15);border-color:rgba(0,200,150,0.35);color:#00c896}
+    .chip-todo{background:rgba(245,197,24,0.1);border-color:rgba(245,197,24,0.3);color:var(--gold)}
+    .dash-welcome{border-radius:var(--radius);margin-bottom:24px;overflow:hidden;background:var(--purple);box-shadow:var(--shadow-md)}
+    .dash-cover{height:110px;overflow:hidden;position:relative;background:linear-gradient(135deg,var(--purple-mid),#0d1b4f)}
+    .dash-cover img{width:100%;height:100%;object-fit:cover;opacity:0.3}
+    .dash-cover-overlay{position:absolute;inset:0;background:linear-gradient(to right,rgba(26,5,51,0.7),rgba(45,13,94,0.4))}
+    .dash-welcome-body{padding:0 24px 22px;color:white}
+    .dash-avatar-row{display:flex;align-items:flex-end;gap:14px;margin-top:-26px;margin-bottom:14px}
+    .dash-avatar{width:60px;height:60px;border-radius:50%;border:3px solid white;background:var(--purple-light);font-size:1.6rem;display:flex;align-items:center;justify-content:center;flex-shrink:0;box-shadow:var(--shadow)}
+    .dash-name{font-family:var(--font-head);font-size:1.25rem;font-weight:800}
+    .dash-role{font-size:0.8rem;opacity:0.6}
+    .activity-feed{display:flex;flex-direction:column;gap:8px}
+    .activity-item{display:flex;gap:10px;padding:10px;background:var(--off-white);border-radius:var(--radius-sm)}
+    .activity-icon{font-size:1.1rem;flex-shrink:0;margin-top:2px}
+    .activity-text{font-size:0.82rem}
+    .activity-time{font-size:0.7rem;color:var(--text-muted);margin-top:2px}
+  </style>
+</head>
+<body>
+<div class="dashboard-layout">
+  <aside class="sidebar">
+    <a href="../index.html" class="sidebar-logo"><span style="color:var(--gold)">Z</span> Zenzele</a>
+    <nav class="sidebar-nav">
+      <a href="#overview"  class="active"><span class="icon">📊</span> Overview</a>
+      <a href="#profile"            ><span class="icon">👤</span> My Profile</a>
+      <a href="#audio"              ><span class="icon">🎙️</span> Audio Pitch</a>
+      <a href="#nft"                ><span class="icon">🏆</span> Mint NFT</a>
+      <a href="#donations"          ><span class="icon">💰</span> Donations</a>
+      <a href="#training"           ><span class="icon">📚</span> Training</a>
+      <a href="explore.html"        ><span class="icon">🌍</span> Explore</a>
+      <a href="#" onclick="doLogout()"><span class="icon">🚪</span> Logout</a>
+    </nav>
+    <div style="margin-top:32px;padding-top:20px;border-top:1px solid rgba(255,255,255,0.08);color:rgba(255,255,255,0.4);font-size:0.72rem" id="sidebarMeta"></div>
+  </aside>
+
+  <main class="dashboard-main">
+
+    <!-- Source badge -->
+    <div id="sourceBadge" class="source-badge badge-demo">⏳ Connecting to database...</div>
+
+    <!-- Welcome card -->
+    <div class="dash-welcome">
+      <div class="dash-cover">
+        <img src="https://images.unsplash.com/photo-1521737604893-d14cc237f11d?w=1200&q=60" alt="" onerror="this.style.display='none'" loading="lazy"/>
+        <div class="dash-cover-overlay"></div>
+      </div>
+      <div class="dash-welcome-body">
+        <div class="dash-avatar-row">
+          <div class="dash-avatar" id="dashAvatar">🧑🏾‍💼</div>
+          <div style="flex:1;padding-bottom:4px">
+            <div class="dash-name" id="dashName">Loading...</div>
+            <div class="dash-role" id="dashRole"></div>
+          </div>
+          <a id="viewProfileBtn" href="#" class="btn-primary" style="font-size:0.8rem;padding:8px 16px;white-space:nowrap">View Profile →</a>
+        </div>
+        <div style="font-size:0.84rem;opacity:0.72;margin-bottom:14px" id="dashInsight"></div>
+        <!-- Completion bar -->
+        <div style="display:flex;justify-content:space-between;font-size:0.8rem;margin-bottom:5px">
+          <span style="opacity:0.6">Profile completion</span>
+          <strong style="color:var(--gold)" id="completionPct">0%</strong>
+        </div>
+        <div class="completion-track"><div class="completion-fill" id="completionFill" style="width:0%"></div></div>
+        <div style="margin-top:10px" id="completionChips"></div>
+      </div>
+    </div>
+
+    <!-- Stats -->
+    <div class="stats-row" id="statsRow"></div>
+
+    <!-- Quick actions + activity -->
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:24px">
+      <div class="section-card">
+        <h3>⚡ Quick Actions</h3>
+        <div style="display:flex;flex-direction:column;gap:10px">
+          <button onclick="jump('audio')"   class="btn-primary" style="text-align:left;padding:12px 16px">🎙️ Record Audio Pitch</button>
+          <button onclick="jump('nft')"     class="btn-primary" style="text-align:left;padding:12px 16px;background:var(--purple-light)">🏆 Mint an NFT</button>
+          <button onclick="jump('profile')" class="btn-primary" style="text-align:left;padding:12px 16px;background:#0d1b4f">👤 Complete Profile</button>
+          <a href="explore.html" style="display:block;text-align:center;padding:11px 16px;border:1.5px solid var(--border);border-radius:50px;font-size:0.88rem;font-weight:600;color:var(--text)">🌍 Explore Entrepreneurs</a>
+        </div>
+      </div>
+      <div class="section-card">
+        <h3>📣 Recent Activity</h3>
+        <div class="activity-feed" id="activityFeed"></div>
+      </div>
+    </div>
+
+    <!-- Edit Profile -->
+    <section id="profile">
+      <div class="section-card">
+        <h3>👤 Edit My Profile</h3>
+        <div id="profileAlert"></div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+          <div class="form-group"><label>Full Name</label><input id="editName" type="text"/></div>
+          <div class="form-group"><label>City / Location</label><input id="editCity" type="text"/></div>
+        </div>
+        <div class="form-group"><label>Category</label>
+          <select id="editCategory">
+            <option>Carpentry</option><option>Digital Marketing</option><option>Coding / Tech</option>
+            <option>Fashion & Clothing</option><option>Tailoring</option><option>Music Production</option>
+            <option>Farming / Agriculture</option><option>Graphic Design</option><option>Photography</option>
+            <option>Food & Catering</option><option>Beauty & Hair</option><option>Education & Tutoring</option>
+            <option>Finance & Bookkeeping</option><option>Other</option>
+          </select>
+        </div>
+        <div class="form-group"><label>Bio / Story</label><textarea id="editBio" rows="4"></textarea></div>
+        <div class="form-group"><label>Skills (comma-separated)</label><input id="editSkills" type="text"/></div>
+        <div class="form-group"><label>Cardano Wallet Address</label><input id="editWallet" type="text" placeholder="addr1q..."/></div>
+        <div class="form-group"><label>Training / Mentorship Wanted</label><input id="editTraining" type="text"/></div>
+        <div class="form-group" style="display:flex;align-items:center;gap:10px">
+          <input type="checkbox" id="editOpenForWork" style="width:auto"/>
+          <label for="editOpenForWork" style="margin:0">Open for work / collaborations</label>
+        </div>
+        <button class="btn-primary" onclick="saveProfileData()">💾 Save Profile</button>
+      </div>
+    </section>
+
+    <!-- Audio -->
+    <section id="audio">
+      <div class="section-card">
+        <h3>🎙️ Record Audio Story Pitch</h3>
+        <p style="color:var(--text-muted);font-size:0.88rem;margin-bottom:18px">Record your voice and let your story speak. Under 2 minutes recommended.</p>
+        <div class="recorder-box">
+          <button class="record-btn" id="recordBtn" onclick="toggleRecord()">🎙️</button>
+          <div class="record-status" id="recordStatus">Click to start recording</div>
+          <audio id="audioPreview" controls style="display:none;width:100%;margin-top:14px"></audio>
+        </div>
+        <button class="btn-primary" style="margin-top:14px" id="saveAudioBtn" onclick="doSaveAudio()" disabled>💾 Save Audio Pitch</button>
+        <div id="audioAlert" style="margin-top:10px"></div>
+      </div>
+    </section>
+
+    <!-- Mint NFT -->
+    <section id="nft">
+      <div class="section-card">
+        <h3>🏆 Mint Entrepreneur NFT</h3>
+        <p style="color:var(--text-muted);font-size:0.88rem;margin-bottom:18px">Create a permanent digital certificate of your hustle on Cardano.</p>
+        <div id="nftAlert"></div>
+        <div class="form-group"><label>NFT Title *</label><input id="nftTitle" type="text" placeholder="e.g. Master Carpenter — Soweto 2026"/></div>
+        <div class="form-group"><label>Description *</label><textarea id="nftDesc" rows="3" placeholder="What does this NFT represent?"></textarea></div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
+          <div class="form-group"><label>Category</label>
+            <select id="nftCategory">
+              <option>Business Achievement</option><option>Skill Certificate</option>
+              <option>Product Showcase</option><option>Campaign</option><option>Training Completion</option>
+            </select>
+          </div>
+          <div class="form-group"><label>Icon Emoji</label><input id="nftIcon" type="text" placeholder="🏆" maxlength="4"/></div>
+        </div>
+        <div class="form-group"><label>Support Goal (optional)</label><input id="nftGoal" type="text" placeholder="e.g. Raise ₳500 for tools"/></div>
+        <button class="btn-primary" onclick="doMintNFT()">⛏️ Mint NFT on Cardano</button>
+        <p style="font-size:0.72rem;color:var(--text-muted);margin-top:8px">⚠️ Simulated on testnet. Real Haskell/Plutus integration coming soon.</p>
+        <div id="nftResult" style="margin-top:14px"></div>
+        <div id="myNfts" style="margin-top:16px"></div>
+      </div>
+    </section>
+
+    <!-- Donations -->
+    <section id="donations">
+      <div class="section-card">
+        <h3>💰 Donations Received</h3>
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:16px" id="donationStats"></div>
+        <div id="donationsList"><p style="color:var(--text-muted);font-size:0.9rem">No donations yet. Share your profile to start receiving support!</p></div>
+        <h4 style="margin:18px 0 10px;font-family:var(--font-head);font-size:0.9rem">Share your profile to receive donations:</h4>
+        <div class="share-buttons" id="shareDonations"></div>
+      </div>
+    </section>
+
+    <!-- Training -->
+    <section id="training">
+      <div class="section-card">
+        <h3>📚 Request Training / Mentorship</h3>
+        <div id="trainingAlert"></div>
+        <div class="form-group"><label>What do you want to learn?</label>
+          <select id="trainingArea">
+            <option>Coding / Programming</option><option>AI & Machine Learning</option>
+            <option>Business Management</option><option>Digital Marketing</option>
+            <option>Finance & Bookkeeping</option><option>Farming & Agriculture</option>
+            <option>Fashion & Design</option><option>Music Production</option>
+            <option>Cardano / Blockchain</option><option>Sales & Entrepreneurship</option>
+          </select>
+        </div>
+        <div class="form-group"><label>Details</label>
+          <textarea id="trainingDetails" placeholder="What specifically do you want to learn?"></textarea>
+        </div>
+        <button class="btn-primary" onclick="doTrainingRequest()">📨 Submit Request</button>
+      </div>
+      <div class="section-card" style="margin-top:18px">
+        <h3>🤝 Available Mentors</h3>
+        <div id="mentorsList"></div>
+      </div>
+    </section>
+
+    <!-- ── CARDANO WALLET ─────────────────────────────────────── -->
+    <section id="wallet">
+      <div class="section-card">
+        <h3>🔗 Cardano Wallet</h3>
+        <p style="color:var(--text-muted);font-size:0.88rem;margin-bottom:16px">
+          Connect your Lace wallet to receive real ADA donations and mint real NFTs on Cardano.
+        </p>
+        <div id="dashLucidStatus" style="margin-bottom:12px"></div>
+        <div id="dashWalletBtn"></div>
+        <div id="dashWalletBalance" style="margin-top:12px"></div>
+        <div style="margin-top:14px;padding-top:14px;border-top:1px solid var(--border)">
+          <a href="cardano-setup.html" style="font-size:0.82rem;color:var(--purple-light);font-weight:600">
+            ⚙️ Full Cardano Setup Guide →
+          </a>
+        </div>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<script src="../js/api-client.js"></script>
+<script src="../js/main.js"></script>
+<script>
+// ── Auth guard ────────────────────────────────────────────────────────────
+let currentUser = getUser();
+if (!currentUser) { window.location.href = 'login.html'; }
+
+let audioBlob = null;
+
+function doLogout() {
+  clearToken();
+  localStorage.removeItem('zenzele_user');
+  window.location.href = '../index.html';
+}
+
+// ── Wait for backend check, then init everything ──────────────────────────
+async function initDashboard() {
+  await new Promise(r => setTimeout(r, 800));
+
+  // Update source badge
+  const badge = document.getElementById('sourceBadge');
+  if (BACKEND_LIVE) {
+    badge.className = 'source-badge badge-live';
+    badge.textContent = '🟢 Live from MySQL';
+
+    // Fetch fresh user data from MySQL (only if JWT token exists)
+    try {
+      const tok = getToken();
+      if (!tok) throw new Error('No token in localStorage — demo login, skip /me call');
+      const fresh = await Auth.me();
+      if (fresh) {
+        currentUser = { ...currentUser, ...fresh };
+        if (typeof currentUser.skills === 'string') {
+          try { currentUser.skills = JSON.parse(currentUser.skills); } catch { currentUser.skills = []; }
+        }
+        setUser(currentUser);
+      }
+    } catch(e) {
+      console.warn('Could not fetch fresh user data:', e.message);
+    }
+
+    // Load NFTs from MySQL
+    try {
+      const nfts = await NFTs.getByUser(currentUser.id);
+      currentUser.nfts = nfts;
+      setUser(currentUser);
+    } catch(e) {
+      console.warn('Could not load NFTs:', e.message);
+    }
+
+    // Load donations from MySQL
+    try {
+      const donResult = await Donations.received(currentUser.id);
+      renderDonations(donResult);
+    } catch(e) {
+      renderDonations(null);
+    }
+
+    // Load mentors from MySQL
+    try {
+      const mentors = await Training.mentors();
+      renderMentors(mentors);
+    } catch(e) {
+      renderMentors([]);
+    }
+
+  } else {
+    badge.className = 'source-badge badge-demo';
+    badge.textContent = '🟡 Demo mode — start XAMPP MySQL to enable database';
+    renderDonations(null);
+    renderMentors(getProfiles().filter(p => p.hasMentor || p.has_mentor));
+  }
+
+  renderWelcome();
+  renderStats();
+  renderActivity();
+  fillProfileForm();
+  renderMyNFTs();
+}
+
+// ── Completion steps ──────────────────────────────────────────────────────
+const STEPS = [
+  { label:'Write a bio',           section:'profile', check: u => !!(u.bio && u.bio.length > 20) },
+  { label:'Add your skills',       section:'profile', check: u => !!(u.skills && u.skills.length) },
+  { label:'Add Cardano wallet',    section:'profile', check: u => !!u.wallet },
+  { label:'Record audio pitch',    section:'audio',   check: u => !!(u.audio_url || u.audioUrl) },
+  { label:'Mint first NFT',        section:'nft',     check: u => !!(u.nfts && u.nfts.length) },
+  { label:'Set work availability', section:'profile', check: u => !!(u.open_for_work || u.openForWork) },
+];
+
+function calcCompletion(u) {
+  const done = STEPS.filter(s => s.check(u)).length;
+  return { done, total: STEPS.length, pct: Math.round(done / STEPS.length * 100) };
+}
+
+function getInsight(u, pct) {
+  if (pct === 100) return '🎉 Profile complete! Share it to attract supporters.';
+  if (!u.wallet)              return 'Add your <strong>Cardano wallet</strong> to receive ADA donations.';
+  if (!(u.audio_url||u.audioUrl)) return 'Profiles with an <strong>audio pitch</strong> get 3× more views.';
+  if (!(u.nfts&&u.nfts.length))  return 'Mint your first <strong>NFT</strong> to prove your hustle on Cardano.';
+  return `<strong>${u.views||0} people</strong> have viewed your profile. Keep sharing!`;
+}
+
+// ── Welcome card ──────────────────────────────────────────────────────────
+function renderWelcome() {
+  document.getElementById('dashAvatar').textContent  = currentUser.avatar || '🧑🏾‍💼';
+  document.getElementById('dashName').textContent    = currentUser.name;
+  document.getElementById('dashRole').textContent    = (currentUser.category||'') + (currentUser.city ? ' · 📍 '+currentUser.city : '');
+  document.getElementById('viewProfileBtn').href     = 'profile.html?id=' + currentUser.id;
+  document.getElementById('sidebarMeta').textContent = currentUser.name + '\n' + (currentUser.category||'');
+
+  const { pct } = calcCompletion(currentUser);
+  document.getElementById('completionPct').textContent  = pct + '%';
+  document.getElementById('completionFill').style.width = pct + '%';
+  document.getElementById('dashInsight').innerHTML      = getInsight(currentUser, pct);
+  document.getElementById('completionChips').innerHTML  = STEPS.map(s => {
+    const done = s.check(currentUser);
+    return `<span class="chip ${done?'chip-done':'chip-todo'}" onclick="jump('${s.section}')">${done?'✅':'○'} ${s.label}</span>`;
+  }).join('');
+}
+
+// ── Stats ─────────────────────────────────────────────────────────────────
+function renderStats() {
+  document.getElementById('statsRow').innerHTML = `
+    <div class="stat-box"><div class="icon">👥</div><div class="label">Followers</div><div class="value">${currentUser.followers||0}</div></div>
+    <div class="stat-box"><div class="icon">❤️</div><div class="label">Likes</div><div class="value">${currentUser.likes||0}</div></div>
+    <div class="stat-box"><div class="icon">👁</div><div class="label">Views</div><div class="value">${currentUser.views||0}</div></div>
+    <div class="stat-box"><div class="icon">💰</div><div class="label">Donations</div><div class="value">${currentUser.donations||0}</div></div>
+    <div class="stat-box"><div class="icon">🏆</div><div class="label">NFTs</div><div class="value">${(currentUser.nfts||[]).length}</div></div>
+  `;
+}
+
+// ── Activity feed ─────────────────────────────────────────────────────────
+function renderActivity() {
+  const u = currentUser;
+  const items = [
+    { icon:'👁',  text:`Profile viewed <strong>${u.views||0}</strong> times`, time:'Total' },
+    { icon:'❤️', text:`<strong>${u.likes||0}</strong> likes received`, time:'Total' },
+    { icon:'👥',  text:`<strong>${u.followers||0}</strong> followers`, time:'Total' },
+    ...((u.nfts||[]).length ? [{ icon:'🏆', text:`<strong>${u.nfts.length}</strong> NFT${u.nfts.length!==1?'s':''} minted`, time:'Cardano' }] : []),
+    ...(!(u.audio_url||u.audioUrl) ? [{ icon:'💡', text:'Add an <strong>audio pitch</strong> to get 3× more views', time:'Tip' }] : []),
+    ...(!u.wallet ? [{ icon:'💳', text:'Add your <strong>Cardano wallet</strong> to receive donations', time:'Action needed' }] : []),
+  ];
+  document.getElementById('activityFeed').innerHTML = items.slice(0,5).map(i=>`
+    <div class="activity-item">
+      <div class="activity-icon">${i.icon}</div>
+      <div><div class="activity-text">${i.text}</div><div class="activity-time">${i.time}</div></div>
+    </div>`).join('');
+}
+
+// ── Fill profile form ─────────────────────────────────────────────────────
+function fillProfileForm() {
+  document.getElementById('editName').value          = currentUser.name||'';
+  document.getElementById('editCity').value          = currentUser.city||currentUser.location||'';
+  document.getElementById('editBio').value           = currentUser.bio||'';
+  document.getElementById('editSkills').value        = (currentUser.skills||[]).join(', ');
+  document.getElementById('editWallet').value        = currentUser.wallet||'';
+  document.getElementById('editTraining').value      = currentUser.training_wanted||currentUser.trainingWanted||'';
+  document.getElementById('editOpenForWork').checked = !!(currentUser.open_for_work||currentUser.openForWork);
+  try { document.getElementById('editCategory').value = currentUser.category||''; } catch(e){}
+}
+
+async function saveProfileData() {
+  const alertEl = document.getElementById('profileAlert');
+  const updated = {
+    name:            document.getElementById('editName').value.trim(),
+    city:            document.getElementById('editCity').value.trim(),
+    category:        document.getElementById('editCategory').value,
+    bio:             document.getElementById('editBio').value.trim(),
+    skills:          document.getElementById('editSkills').value,
+    wallet:          document.getElementById('editWallet').value.trim(),
+    training_wanted: document.getElementById('editTraining').value.trim(),
+    open_for_work:   document.getElementById('editOpenForWork').checked ? 1 : 0,
+  };
+
+  try {
+    if (BACKEND_LIVE) {
+      await Profiles.update(updated);
+      alertEl.innerHTML = '<div class="alert alert-success">✅ Profile saved to MySQL!</div>';
+    } else {
+      alertEl.innerHTML = '<div class="alert alert-success">✅ Profile saved locally (demo mode).</div>';
+    }
+    // Update local cache
+    const merged = {
+      ...currentUser, ...updated,
+      skills: updated.skills.split(',').map(s=>s.trim()).filter(Boolean),
+      openForWork: !!updated.open_for_work,
+    };
+    setUser(merged); currentUser = merged;
+    renderWelcome(); renderStats(); renderActivity();
+    setTimeout(() => alertEl.innerHTML = '', 3000);
+  } catch(e) {
+    alertEl.innerHTML = `<div class="alert alert-error">${e.message}</div>`;
+  }
+}
+
+// ── Audio ─────────────────────────────────────────────────────────────────
+async function toggleRecord() {
+  const btn     = document.getElementById('recordBtn');
+  const statusEl= document.getElementById('recordStatus');
+  const preview = document.getElementById('audioPreview');
+  if (!isRecording) {
+    await startRecording(statusEl, btn);
+  } else {
+    audioBlob = await stopRecording(statusEl, btn, preview);
+    document.getElementById('saveAudioBtn').disabled = false;
+  }
+}
+
+async function doSaveAudio() {
+  if (!audioBlob) return;
+  const alertEl = document.getElementById('audioAlert');
+  alertEl.innerHTML = '<div class="alert alert-info">Saving audio...</div>';
+  try {
+    const result = await saveAudioPitch(audioBlob);
+    currentUser.audio_url = result.audio_url;
+    currentUser.audioUrl  = result.audio_url;
+    setUser(currentUser);
+    alertEl.innerHTML = '<div class="alert alert-success">✅ Audio pitch saved!</div>';
+    renderWelcome();
+  } catch(e) {
+    alertEl.innerHTML = `<div class="alert alert-error">${e.message}</div>`;
+  }
+}
+
+// ── NFT ───────────────────────────────────────────────────────────────────
+async function doMintNFT() {
+  const title   = document.getElementById('nftTitle').value.trim();
+  const desc    = document.getElementById('nftDesc').value.trim();
+  const alertEl = document.getElementById('nftAlert');
+  if (!title||!desc) { showToast('Please fill in title and description.','error'); return; }
+
+  alertEl.innerHTML = '<div class="alert alert-info">Minting NFT...</div>';
+  try {
+    const result = await doMintNFTReal({
+      title, description: desc,
+      category:    document.getElementById('nftCategory').value,
+      supportGoal: document.getElementById('nftGoal').value,
+      icon:        document.getElementById('nftIcon').value || '🏆',
+      wallet:      currentUser.wallet || ''
+    });
+    // Add to local cache
+    const nftEntry = {
+      title,
+      icon:       result.metadata?.icon || document.getElementById('nftIcon').value || '🏆',
+      policy_id:  result.policy_id,
+      tx_hash:    result.tx_hash,
+    };
+    currentUser.nfts = [...(currentUser.nfts||[]), nftEntry];
+    setUser(currentUser);
+
+    alertEl.innerHTML = '';
+    document.getElementById('nftResult').innerHTML = `
+      <div class="alert alert-success">
+        ✅ NFT minted ${BACKEND_LIVE ? 'and saved to MySQL' : '(demo mode)'}!<br/>
+        <small style="word-break:break-all">Policy: ${result.policy_id}<br/>Tx: ${result.tx_hash}<br/>Network: ${result.network}</small>
+      </div>`;
+    renderMyNFTs(); renderStats(); renderWelcome();
+  } catch(e) {
+    alertEl.innerHTML = `<div class="alert alert-error">${e.message}</div>`;
+  }
+}
+
+function renderMyNFTs() {
+  const nfts = currentUser.nfts || [];
+  document.getElementById('myNfts').innerHTML = nfts.length ? `
+    <h4 style="margin-bottom:10px;font-family:var(--font-head);font-size:0.88rem;color:var(--purple)">My NFTs (${nfts.length})</h4>
+    <div class="nft-grid">
+      ${nfts.map(n=>`<div class="nft-card"><div class="nft-icon">${n.icon||'🏆'}</div><h4>${n.title}</h4><small>${(n.policy_id||n.policyId||'').substring(0,16)||'Cardano testnet'}</small></div>`).join('')}
+    </div>` : '';
+}
+
+// ── Donations ─────────────────────────────────────────────────────────────
+function renderDonations(data) {
+  const count    = data?.count    || currentUser.donations || 0;
+  const totalAda = data?.total_ada|| 0;
+  document.getElementById('donationStats').innerHTML = `
+    <div class="stat-box" style="margin:0"><div class="label">Received</div><div class="value">${count}</div></div>
+    <div class="stat-box" style="margin:0"><div class="label">ADA Total</div><div class="value">₳${parseFloat(totalAda).toFixed(2)}</div></div>
+    <div class="stat-box" style="margin:0"><div class="label">Source</div><div class="value" style="font-size:0.85rem">${BACKEND_LIVE?'MySQL':'Demo'}</div></div>
+  `;
+  const list = data?.donations || [];
+  if (list.length) {
+    document.getElementById('donationsList').innerHTML = list.map(d=>`
+      <div style="display:flex;justify-content:space-between;align-items:center;padding:10px;border:1px solid var(--border);border-radius:8px;margin-bottom:8px">
+        <div>
+          <strong style="font-size:0.88rem">${d.from_name||'Anonymous'}</strong>
+          ${d.message ? `<div style="font-size:0.76rem;color:var(--text-muted)">${d.message}</div>` : ''}
+        </div>
+        <strong style="color:var(--green);font-family:var(--font-head)">₳${parseFloat(d.amount_ada).toFixed(2)}</strong>
+      </div>`).join('');
+  }
+  document.getElementById('shareDonations').innerHTML = `
+    <button class="share-btn share-wa" onclick="shareToWhatsApp(${currentUser.id},'${currentUser.name}')">💬 WhatsApp</button>
+    <button class="share-btn share-fb" onclick="shareToFacebook(${currentUser.id})">📘 Facebook</button>
+    <button class="share-btn share-x"  onclick="shareToX(${currentUser.id},'${currentUser.name}')">𝕏 X/Twitter</button>
+    <button class="share-btn share-tg" onclick="shareToTelegram(${currentUser.id},'${currentUser.name}')">✈️ Telegram</button>
+  `;
+}
+
+// ── Training ──────────────────────────────────────────────────────────────
+async function doTrainingRequest() {
+  const area    = document.getElementById('trainingArea').value;
+  const details = document.getElementById('trainingDetails').value;
+  const alertEl = document.getElementById('trainingAlert');
+  try {
+    if (BACKEND_LIVE) await Training.request(area, details);
+    currentUser.training_wanted = area;
+    currentUser.trainingWanted  = area;
+    setUser(currentUser);
+    alertEl.innerHTML = `<div class="alert alert-success">✅ Training request for "<strong>${area}</strong>" submitted!</div>`;
+    renderWelcome();
+  } catch(e) {
+    alertEl.innerHTML = `<div class="alert alert-error">${e.message}</div>`;
+  }
+}
+
+function renderMentors(mentors) {
+  document.getElementById('mentorsList').innerHTML = mentors && mentors.length
+    ? mentors.map(p=>`
+        <div style="display:flex;align-items:center;gap:12px;padding:12px;border:1px solid var(--border);border-radius:8px;margin-bottom:8px">
+          <span style="font-size:1.8rem">${p.avatar||'🧑🏾'}</span>
+          <div style="flex:1">
+            <strong style="font-size:0.92rem">${p.name}</strong><br/>
+            <small style="color:var(--text-muted)">${p.category||''} · ${p.city||p.location||''}</small>
+          </div>
+          <button class="btn-sm" onclick="showToast('Request sent to ${p.name}! 🎉')">Request</button>
+        </div>`).join('')
+    : '<p style="color:var(--text-muted);font-size:0.9rem">No mentors listed yet.</p>';
+}
+
+function jump(id) {
+  const el = document.getElementById(id);
+  if (el) el.scrollIntoView({ behavior:'smooth', block:'start' });
+}
+
+// ── Start ─────────────────────────────────────────────────────────────────
+initDashboard();
+
+// ── Load Lucid + cardano.js for wallet features ───────────────────────────
+const LUCID_CDNS = [
+  '../js/lucid.js', // LOCAL — put lucid.js in js/ folder
+  'https://cdn.jsdelivr.net/npm/lucid-cardano@0.10.7/web/lucid.js',
+  'https://unpkg.com/lucid-cardano@0.10.7/web/lucid.js',
+];
+
+function setDashWalletStatus(msg, type) {
+  const el = document.getElementById('dashLucidStatus');
+  if (!el) return;
+  if (type === 'ok') {
+    el.innerHTML = `<span style="color:#065f46;font-size:0.8rem">✅ ${msg}</span>`;
+  } else if (type === 'err') {
+    el.innerHTML = `<span style="color:#991b1b;font-size:0.8rem">⚠️ ${msg}
+      — <a href="cardano-setup.html" style="color:#991b1b;font-weight:600">Open Setup Page</a></span>`;
+  } else {
+    el.innerHTML = `<span style="color:var(--text-muted);font-size:0.8rem">⏳ ${msg}</span>`;
+  }
+}
+
+function loadScriptTag(src) {
+  return new Promise((resolve, reject) => {
+    const s = document.createElement('script');
+    s.src = src; s.onload = resolve;
+    s.onerror = () => reject(new Error('Failed: ' + src));
+    document.head.appendChild(s);
+  });
+}
+
+async function initWalletSection() {
+  setDashWalletStatus('Loading blockchain library...', 'loading');
+  for (const url of LUCID_CDNS) {
+    try {
+      await loadScriptTag(url);
+      if (window.Lucid || window.lucid || window.lucidCardano) {
+        if (!window.Lucid) window.Lucid = window.lucid || window.lucidCardano;
+        await loadScriptTag('../js/cardano.js');
+        setDashWalletStatus('Blockchain ready — connect your Lace wallet below.', 'ok');
+        renderWalletButton('dashWalletBtn');
+        // Auto-reconnect if previously connected
+        tryAutoReconnect().then(ok => {
+          if (ok) {
+            renderWalletButton('dashWalletBtn');
+            showDashWalletBalance();
+          }
+        });
+        return;
+      }
+    } catch(e) { /* try next CDN */ }
+  }
+  setDashWalletStatus('Blockchain library unavailable (network issue). Use the Setup page.', 'err');
+  document.getElementById('dashWalletBtn').innerHTML = `
+    <a href="cardano-setup.html" class="btn-primary" style="font-size:0.85rem;padding:10px 20px;display:inline-block">
+      ⛓️ Open Cardano Setup Page
+    </a>`;
+}
+
+// Show balance on dashboard after wallet connects
+function onWalletConnected(address, walletId) {
+  showDashWalletBalance();
+  // Update wallet field in profile form
+  const walletInput = document.getElementById('editWallet');
+  if (walletInput) walletInput.value = address;
+  showToast('✅ ' + walletId + ' wallet connected!');
+}
+
+async function showDashWalletBalance() {
+  const el = document.getElementById('dashWalletBalance');
+  if (!el || !connectedWallet) return;
+  try {
+    const bal = await getWalletBalance();
+    el.innerHTML = `
+      <div style="background:#f0fdf4;border:1px solid #86efac;border-radius:8px;padding:12px 14px;font-size:0.84rem">
+        <strong style="color:#065f46">Balance:</strong>
+        <span style="color:var(--green);font-family:var(--font-head);font-size:1.1rem;margin-left:8px">₳ ${bal.ada}</span>
+        <span style="color:#065f46;font-size:0.75rem;margin-left:8px">· ${CARDANO_CONFIG.network}</span>
+      </div>`;
+  } catch(e) { el.innerHTML = ''; }
+}
+
+// Also add wallet link to sidebar
+document.querySelector('.sidebar-nav').insertAdjacentHTML('beforeend',
+  '<a href="#wallet" onclick="jump(\'wallet\')"><span class="icon">🔗</span> Wallet</a>'
+);
+
+initWalletSection();
+</script>
+</body>
+</html>

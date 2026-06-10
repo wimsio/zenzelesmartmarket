@@ -1,0 +1,170 @@
+<!--
+  ===== ADD TO DASHBOARD.HTML =====
+
+  STEP 1: Add this link to the sidebar nav (after the Explore link):
+-->
+<a href="success-stories.html"><span class="icon">🌟</span> Success Stories</a>
+
+<!--
+  STEP 2: Add this section BEFORE the closing </main> tag in dashboard.html.
+  It adds a Success Stories preview card + Image Upload button to the dashboard.
+-->
+
+<!-- ── SUCCESS STORIES PREVIEW ────────────────────────────── -->
+<section id="stories-preview" style="margin-bottom:24px">
+  <div class="section-card" style="background:linear-gradient(135deg,var(--purple) 0%,var(--purple-mid) 100%);color:white;border:none">
+    <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:14px">
+      <div>
+        <h3 style="color:white;margin-bottom:6px">🌟 Success Stories</h3>
+        <p style="font-size:0.85rem;color:rgba(255,255,255,0.7);margin:0">
+          See how entrepreneurs like you are changing their lives on Zenzele Smart Market.
+        </p>
+        <div style="display:flex;gap:16px;margin-top:12px;flex-wrap:wrap">
+          <div style="text-align:center">
+            <div style="font-family:var(--font-head);font-size:1.4rem;font-weight:800;color:var(--gold)" id="previewBusinesses">47+</div>
+            <div style="font-size:0.72rem;color:rgba(255,255,255,0.6)">Businesses</div>
+          </div>
+          <div style="text-align:center">
+            <div style="font-family:var(--font-head);font-size:1.4rem;font-weight:800;color:var(--gold)" id="previewDonations">₳312</div>
+            <div style="font-size:0.72rem;color:rgba(255,255,255,0.6)">Donated</div>
+          </div>
+          <div style="text-align:center">
+            <div style="font-family:var(--font-head);font-size:1.4rem;font-weight:800;color:var(--gold)" id="previewNFTs">19</div>
+            <div style="font-size:0.72rem;color:rgba(255,255,255,0.6)">NFTs Minted</div>
+          </div>
+        </div>
+      </div>
+      <a href="success-stories.html" class="btn-primary"
+         style="background:var(--gold);color:var(--purple);font-weight:700;white-space:nowrap">
+        🌟 View All Stories →
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- ── IMAGE UPLOAD ───────────────────────────────────────── -->
+<section id="imageUpload">
+  <div class="section-card">
+    <h3>🖼️ Upload Profile Image</h3>
+    <p style="font-size:0.85rem;color:var(--text-muted);margin-bottom:16px">
+      Upload a photo to showcase your work. JPG, PNG or WebP, max 5MB.
+    </p>
+    <div id="uploadArea" style="border:2px dashed var(--border);border-radius:10px;padding:32px;text-align:center;cursor:pointer;transition:border-color 0.2s"
+         onclick="document.getElementById('imageFileInput').click()"
+         ondragover="event.preventDefault();this.style.borderColor='var(--purple-light)'"
+         ondragleave="this.style.borderColor='var(--border)'"
+         ondrop="handleImageDrop(event)">
+      <div style="font-size:2.5rem;margin-bottom:8px">📸</div>
+      <div style="font-size:0.88rem;font-weight:600;color:var(--text);margin-bottom:4px">Click to upload or drag & drop</div>
+      <div style="font-size:0.78rem;color:var(--text-muted)">JPG, PNG, WebP up to 5MB</div>
+    </div>
+    <input type="file" id="imageFileInput" accept="image/*" style="display:none" onchange="handleImageSelect(event)"/>
+    <div id="uploadPreview" style="margin-top:14px;display:none">
+      <img id="previewImg" style="width:100%;max-height:200px;object-fit:cover;border-radius:8px;border:1px solid var(--border)"/>
+      <div style="display:flex;gap:10px;margin-top:10px">
+        <button class="btn-primary" onclick="uploadImage()" id="uploadBtn">💾 Save Image</button>
+        <button onclick="cancelUpload()" style="background:none;border:1px solid var(--border);border-radius:50px;padding:9px 18px;font-size:0.85rem;cursor:pointer">Cancel</button>
+      </div>
+    </div>
+    <div id="uploadResult" style="margin-top:12px"></div>
+  </div>
+</section>
+
+<!--
+  STEP 3: Add this <script> block before the closing </script> tag in dashboard.html
+-->
+<script>
+// ── Image upload functions ─────────────────────────────────────────────────
+let selectedImageFile = null;
+
+function handleImageSelect(event) {
+  const file = event.target.files[0];
+  if (file) previewImageFile(file);
+}
+
+function handleImageDrop(event) {
+  event.preventDefault();
+  document.getElementById('uploadArea').style.borderColor = 'var(--border)';
+  const file = event.dataTransfer.files[0];
+  if (file && file.type.startsWith('image/')) previewImageFile(file);
+}
+
+function previewImageFile(file) {
+  if (file.size > 5 * 1024 * 1024) {
+    showToast('File too large. Max 5MB.', 'error');
+    return;
+  }
+  selectedImageFile = file;
+  const reader = new FileReader();
+  reader.onload = e => {
+    document.getElementById('previewImg').src = e.target.result;
+    document.getElementById('uploadPreview').style.display = 'block';
+    document.getElementById('uploadArea').style.display = 'none';
+  };
+  reader.readAsDataURL(file);
+}
+
+function cancelUpload() {
+  selectedImageFile = null;
+  document.getElementById('uploadPreview').style.display = 'none';
+  document.getElementById('uploadArea').style.display = 'block';
+  document.getElementById('imageFileInput').value = '';
+  document.getElementById('uploadResult').innerHTML = '';
+}
+
+async function uploadImage() {
+  if (!selectedImageFile) return;
+  const btn      = document.getElementById('uploadBtn');
+  const resultEl = document.getElementById('uploadResult');
+  btn.textContent = '⏳ Uploading...';
+  btn.disabled    = true;
+
+  try {
+    const formData = new FormData();
+    formData.append('image', selectedImageFile);
+
+    const token = localStorage.getItem('zenzele_token') || '';
+    const res = await fetch('../php/upload-image.php', {
+      method: 'POST',
+      headers: { 'Authorization': 'Bearer ' + token },
+      body: formData
+    });
+
+    const data = await res.json();
+    if (data.success) {
+      // Save URL to user profile
+      if (typeof currentUser !== 'undefined') {
+        currentUser.avatar_url = data.url;
+        if (typeof setUser === 'function') setUser(currentUser);
+        if (typeof BACKEND_LIVE !== 'undefined' && BACKEND_LIVE && typeof Profiles !== 'undefined') {
+          try { await Profiles.update({ avatar_url: data.url }); } catch(e) {}
+        }
+      }
+      resultEl.innerHTML = `
+        <div class="alert alert-success">
+          ✅ Image uploaded!<br/>
+          <a href="${data.url}" target="_blank" style="font-size:0.78rem;color:#065f46">View image →</a>
+        </div>`;
+      showToast('✅ Image uploaded successfully!');
+    } else {
+      throw new Error(data.error || 'Upload failed');
+    }
+  } catch(e) {
+    resultEl.innerHTML = `<div class="alert alert-error">❌ ${e.message}</div>`;
+  } finally {
+    btn.textContent = '💾 Save Image';
+    btn.disabled    = false;
+  }
+}
+</script>
+
+<!--
+  WHAT FILES TO CHANGE:
+  1. Copy success-stories.html → pages/success-stories.html
+  2. Copy upload-image.php    → php/upload-image.php
+  3. In pages/dashboard.html:
+     - Add the sidebar nav link (Step 1)
+     - Paste the two new sections before </main> (Step 2)
+     - Paste the script block before </script> (Step 3)
+  4. Run add_advertisements.sql in phpMyAdmin
+-->

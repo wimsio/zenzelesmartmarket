@@ -1,0 +1,31 @@
+# ===== ZENZELE — .htaccess =====
+# Location: C:\xampp\htdocs\zenzele-smart-market\.htaccess
+# (project root, same folder as index.html)
+#
+# PURPOSE: XAMPP Apache strips the Authorization header before PHP sees it.
+# These two lines pass it through. Without this, every API call returns 401
+# even when the token exists in localStorage.
+
+RewriteEngine On
+RewriteCond %{HTTP:Authorization} ^(.*)
+RewriteRule .* - [E=HTTP_AUTHORIZATION:%1]
+
+# Increase upload limits for audio (Chrome webm files can be 10-20MB)
+<IfModule mod_php.c>
+    php_value upload_max_filesize 32M
+    php_value post_max_size       64M
+    php_value max_execution_time  120
+    php_value max_input_time      120
+</IfModule>
+<IfModule mod_php8.c>
+    php_value upload_max_filesize 32M
+    php_value post_max_size       64M
+    php_value max_execution_time  120
+    php_value max_input_time      120
+</IfModule>
+<IfModule mod_php7.c>
+    php_value upload_max_filesize 32M
+    php_value post_max_size       64M
+    php_value max_execution_time  120
+    php_value max_input_time      120
+</IfModule>

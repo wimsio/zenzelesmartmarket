@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Zenzele Smart Market – Be Self-Reliant</title>
+  <meta name="description" content="An open-source entrepreneur marketplace built on Cardano. Promote your skills, receive donations, mint NFTs, and grow your business."/>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css"/>
+</head>
+<body>
+
+<!-- NAVBAR -->
+<nav class="navbar">
+  <div class="nav-inner">
+    <a href="index.html" class="logo">
+      <span class="logo-z">Z</span>enzele <span class="logo-tag">Smart Market</span>
+    </a>
+    <div class="nav-links">
+      <a href="pages/explore.html">Explore</a>
+      <a href="#how">How it Works</a>
+      <a href="pages/login.html">Login</a>
+      <a href="pages/register.html" class="btn-nav">Join Free</a>
+    </div>
+    <div class="lang-switcher">
+      <select id="langSelect" onchange="setLang(this.value)">
+        <option value="en">🌍 EN</option>
+        <option value="zu">IsiZulu</option>
+        <option value="xh">IsiXhosa</option>
+        <option value="af">Afrikaans</option>
+        <option value="sw">Swahili</option>
+        <option value="st">Sesotho</option>
+      </select>
+    </div>
+  </div>
+</nav>
+
+<!-- ═══════════════════════════════════════════════════ -->
+<!-- HERO — FULL WIDTH WITH COVER IMAGE                 -->
+<!-- ═══════════════════════════════════════════════════ -->
+<section class="hero">
+  <!--
+    COVER IMAGE GUIDANCE
+    ─────────────────────────────────────────────────────
+    Replace the Unsplash URL below with your own image.
+    Recommended royalty-free sources:
+      • https://unsplash.com – search "african entrepreneur", "market vendor", "tailor africa"
+      • https://www.pexels.com – search "small business africa", "african market"
+      • https://pixabay.com   – fully free, no attribution required
+      • https://www.freepik.com (free tier with attribution)
+
+    Good search terms:
+      "african woman entrepreneur", "carpentry africa", "african tailor sewing",
+      "street vendor johannesburg", "african tech startup", "market south africa"
+
+    Ideal image: 1600×900px, warm tones, natural light, people working
+    ─────────────────────────────────────────────────────
+  -->
+  <div class="hero-cover" style="background-image:
+    linear-gradient(160deg, rgba(26,5,51,0.93) 0%, rgba(26,5,51,0.72) 45%, rgba(13,27,79,0.60) 100%),
+    url('https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=1600&q=75') center/cover no-repeat;">
+  </div>
+
+  <div class="hero-inner">
+    <div class="hero-pill">
+      <span></span> Live on Cardano Testnet · Open Source · Global
+    </div>
+
+    <h1 class="hero-title" data-i18n="hero_title">
+      Be <em>Self-Reliant.</em><br/>Build Your Future.
+    </h1>
+
+    <p class="hero-sub" data-i18n="hero_sub">
+      Zenzele empowers entrepreneurs, hustlers, creators and students from any country
+      to promote their work, receive funding, and grow — powered by Cardano blockchain.
+    </p>
+
+    <div class="hero-btns">
+      <a href="pages/register.html" class="btn-primary" data-i18n="cta_join">Join the Market Free</a>
+      <a href="pages/explore.html"  class="btn-ghost"   data-i18n="cta_explore">Browse Entrepreneurs</a>
+    </div>
+
+    <!-- Platform stats bar -->
+    <div class="hero-stats-bar">
+      <div class="hstat">
+        <div class="hstat-num" id="statEnt">1,240+</div>
+        <div class="hstat-label">Entrepreneurs</div>
+      </div>
+      <div class="hstat">
+        <div class="hstat-num" id="statCountries">38</div>
+        <div class="hstat-label">Countries</div>
+      </div>
+      <div class="hstat">
+        <div class="hstat-num" id="statNFTs">4,800+</div>
+        <div class="hstat-label">NFTs Minted</div>
+      </div>
+      <div class="hstat">
+        <div class="hstat-num" id="statDonations">₳ 12,400</div>
+        <div class="hstat-label">ADA Donated</div>
+      </div>
+      <div class="hstat">
+        <div class="hstat-num">6</div>
+        <div class="hstat-label">Languages</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="scroll-hint">Scroll to explore</div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════ -->
+<!-- FEATURED ENTREPRENEURS                             -->
+<!-- ═══════════════════════════════════════════════════ -->
+<section class="featured-section">
+  <div class="section-header">
+    <div>
+      <h2>Featured Entrepreneurs</h2>
+      <p>Real hustlers. Real stories. Real impact.</p>
+    </div>
+    <a href="pages/explore.html">View all →</a>
+  </div>
+
+  <!-- Category filter -->
+  <div class="cat-tabs" id="catTabs">
+    <button class="cat-tab active" onclick="filterCards('all',this)">All</button>
+    <button class="cat-tab" onclick="filterCards('Carpentry',this)">🔨 Carpentry</button>
+    <button class="cat-tab" onclick="filterCards('Tailoring',this)">🧵 Tailoring</button>
+    <button class="cat-tab" onclick="filterCards('Technology',this)">💻 Tech</button>
+    <button class="cat-tab" onclick="filterCards('Farming',this)">🌱 Farming</button>
+    <button class="cat-tab" onclick="filterCards('Beauty',this)">💄 Beauty</button>
+    <button class="cat-tab" onclick="filterCards('Food',this)">🍲 Food</button>
+  </div>
+
+  <div class="ent-grid" id="entGrid">
+    <!-- Rendered by JS -->
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════ -->
+<!-- PLATFORM STATISTICS                                -->
+<!-- ═══════════════════════════════════════════════════ -->
+<section class="stats-section">
+  <div class="stats-inner">
+    <div class="pstat">
+      <div class="pstat-icon">🌍</div>
+      <div class="pstat-num">1,240+</div>
+      <div class="pstat-label">Entrepreneurs Registered</div>
+    </div>
+    <div class="pstat">
+      <div class="pstat-icon">🏆</div>
+      <div class="pstat-num">4,800+</div>
+      <div class="pstat-label">NFTs Minted</div>
+    </div>
+    <div class="pstat">
+      <div class="pstat-icon">💰</div>
+      <div class="pstat-num">₳ 12,400</div>
+      <div class="pstat-label">ADA Donated</div>
+    </div>
+    <div class="pstat">
+      <div class="pstat-icon">📚</div>
+      <div class="pstat-num">380+</div>
+      <div class="pstat-label">Training Requests</div>
+    </div>
+    <div class="pstat">
+      <div class="pstat-icon">🗣️</div>
+      <div class="pstat-num">6</div>
+      <div class="pstat-label">Languages Supported</div>
+    </div>
+    <div class="pstat">
+      <div class="pstat-icon">🌐</div>
+      <div class="pstat-num">38</div>
+      <div class="pstat-label">Countries</div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════ -->
+<!-- HOW IT WORKS                                       -->
+<!-- ═══════════════════════════════════════════════════ -->
+<section class="how-section" id="how">
+  <div class="section-header" style="margin-bottom:0">
+    <div>
+      <h2>How It Works</h2>
+      <p>Four steps to become self-reliant</p>
+    </div>
+  </div>
+  <div class="steps-grid">
+    <div class="step-card">
+      <div class="step-num">1</div>
+      <h3>Create Your Profile</h3>
+      <p>Sign up, describe your hustle, add your skills and location. Your profile is your digital storefront.</p>
+    </div>
+    <div class="step-card">
+      <div class="step-num">2</div>
+      <h3>Record Your Story</h3>
+      <p>Record a short voice pitch with optional background music. Let your personality shine through.</p>
+    </div>
+    <div class="step-card">
+      <div class="step-num">3</div>
+      <h3>Mint Your NFT</h3>
+      <p>Create a Cardano NFT as a digital certificate of your business, achievement, or campaign.</p>
+    </div>
+    <div class="step-card">
+      <div class="step-num">4</div>
+      <h3>Receive Support</h3>
+      <p>Get donations in ADA, find mentors, receive training, and grow your network worldwide.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════ -->
+<!-- FEATURES STRIP                                     -->
+<!-- ═══════════════════════════════════════════════════ -->
+<section class="features-strip">
+  <div class="features-strip-inner">
+    <div class="section-header" style="margin-bottom:36px">
+      <div><h2>Everything You Need</h2><p>One platform. Endless opportunities.</p></div>
+    </div>
+    <div class="features-grid">
+      <div class="feat-card"><div class="feat-icon">🎙️</div><h3>Audio Story Pitch</h3><p>Record your voice, add soft background music, and let your story speak for itself.</p></div>
+      <div class="feat-card"><div class="feat-icon">🏆</div><h3>Entrepreneur NFT</h3><p>Mint a digital certificate of your hustle, product, or achievement on Cardano.</p></div>
+      <div class="feat-card"><div class="feat-icon">💰</div><h3>Cardano Donations</h3><p>Receive transparent, borderless funding directly in ADA from supporters worldwide.</p></div>
+      <div class="feat-card"><div class="feat-icon">📚</div><h3>Training & Mentorship</h3><p>Request help in coding, farming, business, marketing, design, and much more.</p></div>
+      <div class="feat-card"><div class="feat-icon">🌍</div><h3>6 Languages</h3><p>English, isiZulu, isiXhosa, Afrikaans, Swahili, Sesotho — and growing.</p></div>
+      <div class="feat-card"><div class="feat-icon">📲</div><h3>Share Everywhere</h3><p>Share your profile to WhatsApp, TikTok, Facebook, Instagram, Telegram and X.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- CONTEST BANNER -->
+<section class="contest-banner">
+  <div class="cb-inner">
+    <h2>🏅 Developer Contest 2026</h2>
+    <p>Fork the repo, build something real, and win. <strong>Deadline: 5 June 2026.</strong></p>
+    <a href="https://github.com/wimsio/zenzelesmartmarket" target="_blank" class="btn-dark">Fork on GitHub</a>
+    <a href="https://chat.whatsapp.com/F6aqjTSEdhGFvoiOB9E3a1" target="_blank" class="btn-outline-dark">Join WhatsApp Group</a>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer class="footer">
+  <div class="footer-inner">
+    <div class="footer-top">
+      <div class="footer-brand">
+        <div class="logo"><span class="logo-z">Z</span>enzele <span class="logo-tag">Smart Market</span></div>
+        <p>An open-source entrepreneur marketplace built on the Cardano blockchain. Be self-reliant. Build your future.</p>
+      </div>
+      <div class="footer-col">
+        <h4>Platform</h4>
+        <a href="pages/explore.html">Explore</a>
+        <a href="pages/register.html">Join Free</a>
+        <a href="pages/login.html">Login</a>
+      </div>
+      <div class="footer-col">
+        <h4>Developers</h4>
+        <a href="https://github.com/wimsio/zenzelesmartmarket" target="_blank">GitHub Repo</a>
+        <a href="AI_USAGE.md">AI Usage Docs</a>
+        <a href="https://chat.whatsapp.com/F6aqjTSEdhGFvoiOB9E3a1" target="_blank">WhatsApp Group</a>
+      </div>
+      <div class="footer-col">
+        <h4>Contact</h4>
+        <a href="https://zenzelesmartmarket.co" target="_blank">Website</a>
+        <a href="tel:+27731820631">+27 73 182 0631</a>
+        <a>Bernard Sibanda · CTO</a>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <small>© 2026 Zenzele Smart Market · MIT License · Built on Cardano</small>
+      <small>Be Self-Reliant. Build the Future. Change Lives.</small>
+    </div>
+  </div>
+</footer>
+
+<script src="js/i18n.js"></script>
+<script src="js/main.js"></script>
+<script>
+// ── Featured entrepreneur data ─────────────────────────────────────────────
+// Cover images: all from Unsplash (free to use).
+// Replace with your own photos for stronger local identity.
+// Good free sources: unsplash.com · pexels.com · pixabay.com
+const FEATURED = [
+  {
+    id: 1,
+    name: "Thabo Mokoena",
+    location: "Soweto, South Africa",
+    category: "Carpentry",
+    bio: "I build custom furniture from reclaimed wood. 10 years of turning scrap into art.",
+    skills: ["Woodwork","Furniture","Reclaimed Wood"],
+    avatar: "🧑🏾‍💼",
+    // Unsplash: man woodworking
+    cover: "https://images.unsplash.com/photo-1504148455328-c376907d081c?w=600&q=60",
+    followers: 124, likes: 89, views: 432, nfts: 2, openForWork: true
+  },
+  {
+    id: 2,
+    name: "Aisha Ndlovu",
+    location: "Nairobi, Kenya",
+    category: "Technology",
+    bio: "Helping small businesses grow online with social media strategy and SEO.",
+    skills: ["SEO","Social Media","Content Creation"],
+    avatar: "👩🏿‍💻",
+    // Unsplash: woman on laptop
+    cover: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=600&q=60",
+    followers: 256, likes: 198, views: 870, nfts: 3, openForWork: true
+  },
+  {
+    id: 3,
+    name: "Nomvula Dlamini",
+    location: "Durban, South Africa",
+    category: "Tailoring",
+    bio: "Creating Afrocentric fashion that celebrates our roots. Each piece tells a story.",
+    skills: ["Sewing","Pattern Design","Afrocentric Style"],
+    avatar: "👗",
+    // Unsplash: woman sewing / textile
+    cover: "https://images.unsplash.com/photo-1558769132-cb1aea458c5e?w=600&q=60",
+    followers: 340, likes: 290, views: 1200, nfts: 4, openForWork: false
+  },
+  {
+    id: 4,
+    name: "Fatima Al-Hassan",
+    location: "Lagos, Nigeria",
+    category: "Farming",
+    bio: "Organic vegetable farmer using smart irrigation. Feeding 3 communities.",
+    skills: ["Organic Farming","Irrigation","Agri-Tech"],
+    avatar: "🌱",
+    // Unsplash: woman farming
+    cover: "https://images.unsplash.com/photo-1560493676-04071c5f467b?w=600&q=60",
+    followers: 92, likes: 67, views: 380, nfts: 1, openForWork: false
+  },
+  {
+    id: 5,
+    name: "Carlos Mendes",
+    location: "São Paulo, Brazil",
+    category: "Technology",
+    bio: "Producing Afrobeats and Brazilian funk beats. Looking for global collaborations.",
+    skills: ["Beat Making","Mixing","Mastering"],
+    avatar: "🎵",
+    // Unsplash: music studio
+    cover: "https://images.unsplash.com/photo-1598488035139-bdbb2231ce04?w=600&q=60",
+    followers: 178, likes: 155, views: 620, nfts: 2, openForWork: true
+  },
+  {
+    id: 6,
+    name: "Zanele Khumalo",
+    location: "Johannesburg, South Africa",
+    category: "Beauty",
+    bio: "Natural hair care and beauty products made from local ingredients. 5-star reviews.",
+    skills: ["Hair Care","Natural Products","Beauty"],
+    avatar: "💄",
+    // Unsplash: beauty / hair salon
+    cover: "https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?w=600&q=60",
+    followers: 410, likes: 350, views: 1560, nfts: 5, openForWork: true
+  },
+  {
+    id: 7,
+    name: "Ravi Sharma",
+    location: "Mumbai, India",
+    category: "Technology",
+    bio: "Full-stack developer building fintech tools for rural communities on Cardano.",
+    skills: ["PHP","JavaScript","Cardano"],
+    avatar: "👨🏽‍💻",
+    // Unsplash: developer coding
+    cover: "https://images.unsplash.com/photo-1461749280684-dccba630e2f6?w=600&q=60",
+    followers: 88, likes: 71, views: 310, nfts: 1, openForWork: false
+  },
+  {
+    id: 8,
+    name: "Lindiwe Moyo",
+    location: "Harare, Zimbabwe",
+    category: "Food",
+    bio: "Authentic Zimbabwean home-cooked meals. Catering for events and daily delivery.",
+    skills: ["Catering","Cooking","Event Food"],
+    avatar: "🍲",
+    // Unsplash: food / cooking
+    cover: "https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=600&q=60",
+    followers: 195, likes: 142, views: 740, nfts: 2, openForWork: true
+  }
+];
+
+// ── Render cards ────────────────────────────────────────────────────────────
+function renderEntrepreneurs(filter = 'all') {
+  const grid = document.getElementById('entGrid');
+  const data = filter === 'all' ? FEATURED : FEATURED.filter(e => e.category === filter);
+
+  grid.innerHTML = data.map(e => `
+    <div class="ent-card-v2" onclick="window.location.href='pages/profile.html?id=${e.id}'" data-cat="${e.category}">
+      <div class="ent-card-cover">
+        <img src="${e.cover}" alt="${e.name} - ${e.category}"
+          onerror="this.style.display='none'"
+          loading="lazy"/>
+        <div class="ent-card-cover-overlay"></div>
+        <span class="ent-card-cat-badge">${e.category}</span>
+        ${e.openForWork ? '<span class="ent-card-open-badge">✅ Open for Work</span>' : ''}
+      </div>
+
+      <div class="ent-card-body">
+        <div class="ent-card-profile">
+          <div class="ent-avatar-emoji">${e.avatar}</div>
+          <div class="ent-card-name-block">
+            <div class="ent-card-name">${e.name}</div>
+            <div class="ent-card-location">📍 ${e.location}</div>
+          </div>
+        </div>
+
+        <p class="ent-card-bio">${e.bio}</p>
+
+        <div class="ent-card-skills">
+          ${e.skills.slice(0,3).map(s => `<span class="skill-tag">${s}</span>`).join('')}
+        </div>
+
+        <div class="ent-card-footer">
+          <div class="ent-card-stats">
+            <span>❤️ ${e.likes}</span>
+            <span>👥 ${e.followers}</span>
+            <span>🏆 ${e.nfts}</span>
+          </div>
+          <span class="btn-visit">View Profile</span>
+        </div>
+      </div>
+    </div>
+  `).join('');
+}
+
+function filterCards(cat, btn) {
+  document.querySelectorAll('.cat-tab').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  renderEntrepreneurs(cat);
+}
+
+// ── Animate stats counter ───────────────────────────────────────────────────
+function animateCount(el, target, prefix = '', suffix = '') {
+  const isFloat = String(target).includes('.');
+  const duration = 1800;
+  const start = performance.now();
+  const from = 0;
+  function update(now) {
+    const elapsed = now - start;
+    const progress = Math.min(elapsed / duration, 1);
+    const ease = 1 - Math.pow(1 - progress, 3);
+    const current = from + (target - from) * ease;
+    el.textContent = prefix + (isFloat ? current.toFixed(1) : Math.floor(current).toLocaleString()) + suffix;
+    if (progress < 1) requestAnimationFrame(update);
+  }
+  requestAnimationFrame(update);
+}
+
+// Only animate when section enters viewport
+const statsObserver = new IntersectionObserver(entries => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      animateCount(document.querySelector('.stats-section .pstat:nth-child(1) .pstat-num'), 1240, '', '+');
+      animateCount(document.querySelector('.stats-section .pstat:nth-child(2) .pstat-num'), 4800, '', '+');
+      animateCount(document.querySelector('.stats-section .pstat:nth-child(4) .pstat-num'), 380, '', '+');
+      statsObserver.disconnect();
+    }
+  });
+}, { threshold: 0.3 });
+const statsSection = document.querySelector('.stats-section');
+if (statsSection) statsObserver.observe(statsSection);
+
+// ── Init ────────────────────────────────────────────────────────────────────
+renderEntrepreneurs();
+</script>
+</body>
+</html>

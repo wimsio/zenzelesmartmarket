@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Zenzele Smart Market – Be Self-Reliant</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css"/>
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="navbar">
+  <div class="nav-inner">
+    <a href="index.html" class="logo">
+      <span class="logo-z">Z</span>enzele <span class="logo-tag">Smart Market</span>
+    </a>
+    <div class="nav-links">
+      <a href="pages/explore.html">Explore</a>
+      <a href="pages/login.html">Login</a>
+      <a href="pages/register.html" class="btn-nav">Join Free</a>
+    </div>
+    <div class="lang-switcher">
+      <select id="langSelect" onchange="setLang(this.value)">
+        <option value="en">🌍 EN</option>
+        <option value="zu">IsiZulu</option>
+        <option value="xh">IsiXhosa</option>
+        <option value="af">Afrikaans</option>
+        <option value="sw">Swahili</option>
+        <option value="st">Sesotho</option>
+      </select>
+    </div>
+  </div>
+</nav>
+
+<!-- HERO -->
+<header class="hero">
+  <div class="hero-inner">
+
+    <!-- LEFT: text -->
+    <div class="hero-content">
+      <span class="hero-pill" data-i18n="hero_pill">Built on Cardano · Open Source · Global</span>
+      <h1 class="hero-title" data-i18n="hero_title">Be <em>Self-Reliant.</em><br/>Build Your Future.</h1>
+      <p class="hero-sub" data-i18n="hero_sub">Zenzele Smart Market empowers entrepreneurs, hustlers, creators & students worldwide to promote their work, get funding, and grow — using blockchain.</p>
+      <div class="hero-btns">
+        <a href="pages/register.html" class="btn-primary" data-i18n="cta_join">Join the Market</a>
+        <a href="pages/explore.html" class="btn-ghost" data-i18n="cta_explore">Explore Entrepreneurs</a>
+      </div>
+      <div class="hero-stats">
+        <div class="stat"><strong>3 Weeks</strong><span>Contest Duration</span></div>
+        <div class="stat"><strong>R5,000</strong><span>Top Prize</span></div>
+        <div class="stat"><strong>15×R1K</strong><span>Dev Prizes</span></div>
+        <div class="stat"><strong>5 June</strong><span>Deadline</span></div>
+      </div>
+    </div>
+
+    <!-- RIGHT: Thabo profile card -->
+    <div class="hero-visual">
+      <div class="profile-card-demo">
+        <div class="pcd-avatar">🧑🏾‍💼</div>
+        <div class="pcd-info">
+          <h3>Thabo Mokoena</h3>
+          <span>📍 Soweto, SA · 🛠 Carpenter</span>
+          <p>"I build custom furniture from reclaimed wood."</p>
+          <div class="pcd-tags">
+            <span>NFT ✅</span>
+            <span>Open for work</span>
+            <span>Mentor wanted</span>
+          </div>
+          <div class="pcd-actions">
+            <button class="btn-sm">❤️ 124</button>
+            <button class="btn-sm">💰 Donate</button>
+            <button class="btn-sm">🔗 Share</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</header>
+
+<!-- FEATURES -->
+<section class="features">
+  <h2 data-i18n="features_title">One Platform. Endless Opportunities.</h2>
+  <div class="features-grid">
+    <div class="feat-card">
+      <div class="feat-icon">🎙️</div>
+      <h3 data-i18n="feat1_title">Audio Story Pitch</h3>
+      <p data-i18n="feat1_desc">Record your voice, add background music, and let your story speak for itself.</p>
+    </div>
+    <div class="feat-card">
+      <div class="feat-icon">🏆</div>
+      <h3 data-i18n="feat2_title">Entrepreneur NFT</h3>
+      <p data-i18n="feat2_desc">Mint a digital certificate of your hustle on the Cardano blockchain.</p>
+    </div>
+    <div class="feat-card">
+      <div class="feat-icon">💰</div>
+      <h3 data-i18n="feat3_title">Receive Donations</h3>
+      <p data-i18n="feat3_desc">Get funded directly through Cardano. Transparent and borderless.</p>
+    </div>
+    <div class="feat-card">
+      <div class="feat-icon">📚</div>
+      <h3 data-i18n="feat4_title">Request Training</h3>
+      <p data-i18n="feat4_desc">Connect with mentors for coding, farming, business, design & more.</p>
+    </div>
+    <div class="feat-card">
+      <div class="feat-icon">🌍</div>
+      <h3 data-i18n="feat5_title">Multi-Language</h3>
+      <p data-i18n="feat5_desc">English, isiZulu, Afrikaans, Swahili, Sesotho, isiXhosa — and growing.</p>
+    </div>
+    <div class="feat-card">
+      <div class="feat-icon">📲</div>
+      <h3 data-i18n="feat6_title">Share Everywhere</h3>
+      <p data-i18n="feat6_desc">Share your profile to WhatsApp, TikTok, Instagram, Facebook & X.</p>
+    </div>
+  </div>
+</section>
+
+<!-- CONTEST BANNER -->
+<section class="contest-banner">
+  <div class="cb-inner">
+    <h2>🏅 Developer Contest 2026</h2>
+    <p>Fork the repo, build something real, and win. <strong>Deadline: 5 June 2026.</strong></p>
+    <a href="https://github.com/wimsio/zenzelesmartmarket" target="_blank" class="btn-primary">Fork on GitHub</a>
+    <a href="https://chat.whatsapp.com/F6aqjTSEdhGFvoiOB9E3a1" target="_blank" class="btn-ghost">Join WhatsApp Group</a>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer class="footer">
+  <div class="footer-inner">
+    <div>
+      <strong>Zenzele Smart Market</strong><br/>
+      <small>Be Self-Reliant. Built on Cardano.</small>
+    </div>
+    <div>
+      <a href="https://zenzelesmartmarket.co" target="_blank">Website</a>
+      <a href="https://github.com/wimsio/zenzelesmartmarket" target="_blank">GitHub</a>
+      <a href="pages/about.html">About</a>
+    </div>
+    <div>
+      <small>CTO: Bernard Sibanda · +27 73 182 0631</small>
+    </div>
+  </div>
+</footer>
+
+<script src="js/i18n.js"></script>
+<script src="js/main.js"></script>
+</body>
+</html>

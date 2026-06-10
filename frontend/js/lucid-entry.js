@@ -1,0 +1,1 @@
+﻿import { Lucid, Blockfrost, fromHex, toHex, C } from "../node_modules/lucid-cardano/web/mod.js"; window.__LucidMod = { Lucid, Blockfrost, fromHex, toHex, C }; window.Lucid = Lucid; window.Blockfrost = Blockfrost; console.log("[Lucid Loader] ✅ Lucid ready on window.__LucidMod");

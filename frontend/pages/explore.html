@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Explore Entrepreneurs – Zenzele Smart Market</title>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../css/style.css"/>
+  <style>
+    .source-badge {
+      display: inline-flex; align-items: center; gap: 6px;
+      font-size: 0.75rem; padding: 4px 12px; border-radius: 50px;
+      margin-bottom: 20px; font-weight: 600;
+    }
+    .badge-live { background: #d1fae5; color: #065f46; border: 1px solid #6ee7b7; }
+    .badge-demo { background: #fef3c7; color: #92400e; border: 1px solid #fcd34d; }
+    .loading-grid {
+      display: grid; grid-template-columns: repeat(auto-fill, minmax(260px,1fr)); gap: 24px;
+    }
+    .skeleton {
+      background: white; border-radius: 16px; overflow: hidden;
+      border: 1px solid #e8deff; height: 280px;
+      background: linear-gradient(90deg, #f0ebff 25%, #e8deff 50%, #f0ebff 75%);
+      background-size: 200% 100%;
+      animation: shimmer 1.4s infinite;
+    }
+    @keyframes shimmer { 0%{background-position:200% 0} 100%{background-position:-200% 0} }
+    .empty-state { text-align:center; padding: 60px 20px; color: var(--text-muted); grid-column: 1/-1; }
+    .empty-state .icon { font-size: 3rem; margin-bottom: 12px; }
+    .empty-state h3 { font-family: var(--font-head); color: var(--purple); margin-bottom: 8px; }
+    .pagination { display:flex; gap:8px; justify-content:center; margin-top:40px; flex-wrap:wrap; }
+    .page-btn {
+      padding: 8px 16px; border-radius: 50px; border: 1.5px solid var(--border);
+      background: white; font-size: 0.85rem; cursor: pointer; transition: all 0.2s;
+    }
+    .page-btn:hover, .page-btn.active { background: var(--purple); color: white; border-color: var(--purple); }
+    .page-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+    .result-count { font-size: 0.85rem; color: var(--text-muted); margin-bottom: 20px; }
+  </style>
+</head>
+<body>
+
+<nav class="navbar">
+  <div class="nav-inner">
+    <a href="../index.html" class="logo"><span class="logo-z">Z</span>enzele <span class="logo-tag">Smart Market</span></a>
+    <div class="nav-links">
+      <a href="explore.html">Explore</a>
+      <a href="dashboard.html">Dashboard</a>
+      <a href="login.html" class="btn-nav" id="navLoginBtn">Login</a>
+    </div>
+  </div>
+</nav>
+
+<div class="explore-page">
+  <h1>🌍 Explore Entrepreneurs</h1>
+  <p style="color:var(--text-muted);margin-bottom:16px">Discover hustlers, creators, and business owners from around the world.</p>
+
+  <!-- Data source badge -->
+  <div id="sourceBadge" class="source-badge badge-demo">⏳ Connecting...</div>
+
+  <!-- Search bar -->
+  <div style="display:flex;gap:12px;margin-bottom:16px;flex-wrap:wrap">
+    <input type="text" id="searchInput" placeholder="🔍 Search by name, skill, city..."
+      style="flex:1;padding:12px 18px;border:1.5px solid var(--border);border-radius:50px;
+             font-family:var(--font-body);font-size:0.9rem;outline:none;min-width:200px"
+      oninput="debounceSearch()"/>
+    <select id="countryFilter" onchange="applyFilters()"
+      style="padding:12px 16px;border:1.5px solid var(--border);border-radius:50px;
+             font-family:var(--font-body);font-size:0.88rem;outline:none;background:white">
+      <option value="">🌍 All Countries</option>
+      <option value="ZA">🇿🇦 South Africa</option>
+      <option value="KE">🇰🇪 Kenya</option>
+      <option value="NG">🇳🇬 Nigeria</option>
+      <option value="ZW">🇿🇼 Zimbabwe</option>
+      <option value="IN">🇮🇳 India</option>
+      <option value="BR">🇧🇷 Brazil</option>
+      <option value="US">🇺🇸 USA</option>
+      <option value="GB">🇬🇧 UK</option>
+    </select>
+  </div>
+
+  <!-- Category filters -->
+  <div class="explore-filters" id="filterRow">
+    <button class="filter-btn active" onclick="setCat('',this)">All</button>
+    <button class="filter-btn" onclick="setCat('Carpentry',this)">🔨 Carpentry</button>
+    <button class="filter-btn" onclick="setCat('Coding',this)">💻 Coding</button>
+    <button class="filter-btn" onclick="setCat('Fashion',this)">👗 Fashion</button>
+    <button class="filter-btn" onclick="setCat('Digital Marketing',this)">📱 Marketing</button>
+    <button class="filter-btn" onclick="setCat('Music Production',this)">🎵 Music</button>
+    <button class="filter-btn" onclick="setCat('Farming',this)">🌱 Farming</button>
+    <button class="filter-btn" onclick="setCat('open',this)">✅ Open for Work</button>
+  </div>
+
+  <!-- Result count -->
+  <div class="result-count" id="resultCount"></div>
+
+  <!-- Cards grid -->
+  <div id="grid"></div>
+
+  <!-- Pagination -->
+  <div class="pagination" id="pagination"></div>
+</div>
+
+<script src="../js/api-client.js"></script>
+<script src="../js/main.js"></script>
+<script>
+// ── State ─────────────────────────────────────────────────────────────────
+let currentPage     = 1;
+let currentCategory = '';
+let currentSearch   = '';
+let currentCountry  = '';
+let totalPages      = 1;
+let searchTimer     = null;
+const PAGE_LIMIT    = 12;
+
+// ── Update nav if logged in ───────────────────────────────────────────────
+const loggedInUser = getUser();
+if (loggedInUser) {
+  document.getElementById('navLoginBtn').textContent = 'Dashboard';
+  document.getElementById('navLoginBtn').href = 'dashboard.html';
+}
+
+// ── Source badge ──────────────────────────────────────────────────────────
+function updateBadge(source) {
+  const el = document.getElementById('sourceBadge');
+  if (source === 'mysql') {
+    el.className = 'source-badge badge-live';
+    el.textContent = '🟢 Live from MySQL';
+  } else {
+    el.className = 'source-badge badge-demo';
+    el.textContent = '🟡 Demo mode — backend not connected';
+  }
+}
+
+// ── Show skeleton loading ─────────────────────────────────────────────────
+function showSkeleton() {
+  document.getElementById('grid').innerHTML =
+    '<div class="loading-grid">' +
+    Array(6).fill('<div class="skeleton"></div>').join('') +
+    '</div>';
+}
+
+// ── Fetch and render ──────────────────────────────────────────────────────
+async function fetchAndRender() {
+  showSkeleton();
+  document.getElementById('pagination').innerHTML = '';
+
+  // Wait for backend check
+  await new Promise(r => setTimeout(r, 700));
+
+  if (BACKEND_LIVE) {
+    // ── MYSQL PATH ──────────────────────────────────────────────────────
+    try {
+      const params = {
+        page:         currentPage,
+        limit:        PAGE_LIMIT,
+        search:       currentSearch,
+        category:     currentCategory === 'open' ? '' : currentCategory,
+        country:      currentCountry,
+        open_for_work:currentCategory === 'open' ? '1' : '',
+      };
+      const result = await Profiles.list(params);
+      const profiles = result.profiles || [];
+      totalPages = result.total_pages || 1;
+
+      updateBadge('mysql');
+      document.getElementById('resultCount').textContent =
+        `${result.total || profiles.length} entrepreneur${(result.total || profiles.length) !== 1 ? 's' : ''} found`;
+
+      renderCards(profiles, 'mysql');
+      renderPagination();
+    } catch(err) {
+      console.error('Profiles.list failed:', err);
+      fallbackToDemo();
+    }
+  } else {
+    fallbackToDemo();
+  }
+}
+
+// ── Demo fallback ─────────────────────────────────────────────────────────
+function fallbackToDemo() {
+  updateBadge('demo');
+  let profiles = getProfiles();
+
+  if (currentSearch) {
+    const s = currentSearch.toLowerCase();
+    profiles = profiles.filter(p =>
+      (p.name||'').toLowerCase().includes(s) ||
+      (p.bio||'').toLowerCase().includes(s) ||
+      (p.city||'').toLowerCase().includes(s) ||
+      (p.skills||[]).some(sk => sk.toLowerCase().includes(s))
+    );
+  }
+  if (currentCategory && currentCategory !== 'open') {
+    profiles = profiles.filter(p => (p.category||'').toLowerCase().includes(currentCategory.toLowerCase()));
+  }
+  if (currentCategory === 'open') {
+    profiles = profiles.filter(p => p.openForWork || p.open_for_work);
+  }
+  if (currentCountry) {
+    profiles = profiles.filter(p => p.country === currentCountry);
+  }
+
+  document.getElementById('resultCount').textContent =
+    `${profiles.length} entrepreneur${profiles.length !== 1 ? 's' : ''} found (demo data)`;
+  renderCards(profiles, 'demo');
+}
+
+// ── Render cards ──────────────────────────────────────────────────────────
+function renderCards(profiles, source) {
+  const grid = document.getElementById('grid');
+
+  if (!profiles.length) {
+    grid.innerHTML = `
+      <div class="empty-state">
+        <div class="icon">🔍</div>
+        <h3>No entrepreneurs found</h3>
+        <p>Try a different search term or category.</p>
+        ${source === 'mysql' ? '<p style="margin-top:8px">New users who just registered will appear here.</p>' : ''}
+      </div>`;
+    return;
+  }
+
+  grid.innerHTML = `<div class="entrepreneurs-grid">` +
+    profiles.map(p => {
+      const skills  = Array.isArray(p.skills)
+        ? p.skills
+        : (typeof p.skills === 'string' ? JSON.parse(p.skills || '[]') : []);
+      const nftCount = p.nft_count || (p.nfts ? p.nfts.length : 0);
+      const location = p.city || p.location || 'Unknown';
+      const isOpen   = p.open_for_work || p.openForWork;
+
+      return `
+        <a href="profile.html?id=${p.id}" class="ent-card">
+          <div style="font-size:2.2rem;margin-bottom:10px">${p.avatar || '🧑🏾‍💼'}</div>
+          <h3 style="font-family:var(--font-head);font-size:1rem;font-weight:700;color:var(--purple);margin-bottom:4px">${p.name}</h3>
+          <div style="font-size:0.78rem;color:var(--text-muted);margin-bottom:8px">
+            📍 ${location} · ${p.category || 'Entrepreneur'}
+          </div>
+          ${isOpen ? '<span style="background:#d1fae5;color:#065f46;font-size:0.7rem;padding:3px 10px;border-radius:50px;display:inline-block;margin-bottom:8px;font-weight:600">✅ Open for Work</span>' : ''}
+          <p style="font-size:0.84rem;color:var(--text);margin-bottom:10px;line-height:1.5">
+            ${(p.bio||'').substring(0,90)}${(p.bio||'').length>90?'…':''}
+          </p>
+          <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px">
+            ${skills.slice(0,3).map(s=>`<span class="skill-tag">${s}</span>`).join('')}
+          </div>
+          <div style="display:flex;justify-content:space-between;font-size:0.76rem;color:var(--text-muted);border-top:1px solid var(--border);padding-top:10px">
+            <span>❤️ ${p.likes||0}</span>
+            <span>👥 ${p.followers||0}</span>
+            <span>👁 ${p.views||0}</span>
+            <span>🏆 ${nftCount}</span>
+          </div>
+        </a>`;
+    }).join('') +
+  `</div>`;
+}
+
+// ── Pagination ────────────────────────────────────────────────────────────
+function renderPagination() {
+  if (totalPages <= 1) return;
+  const pg = document.getElementById('pagination');
+  let html = `<button class="page-btn" onclick="goToPage(${currentPage-1})" ${currentPage===1?'disabled':''}>← Prev</button>`;
+  for (let i = 1; i <= totalPages; i++) {
+    html += `<button class="page-btn ${i===currentPage?'active':''}" onclick="goToPage(${i})">${i}</button>`;
+  }
+  html += `<button class="page-btn" onclick="goToPage(${currentPage+1})" ${currentPage===totalPages?'disabled':''}>Next →</button>`;
+  pg.innerHTML = html;
+}
+
+function goToPage(p) {
+  if (p < 1 || p > totalPages) return;
+  currentPage = p;
+  fetchAndRender();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+// ── Filter controls ───────────────────────────────────────────────────────
+function setCat(cat, btn) {
+  currentCategory = cat;
+  currentPage     = 1;
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  fetchAndRender();
+}
+
+function applyFilters() {
+  currentCountry = document.getElementById('countryFilter').value;
+  currentPage    = 1;
+  fetchAndRender();
+}
+
+function debounceSearch() {
+  clearTimeout(searchTimer);
+  searchTimer = setTimeout(() => {
+    currentSearch = document.getElementById('searchInput').value.trim();
+    currentPage   = 1;
+    fetchAndRender();
+  }, 400);
+}
+
+// ── Init ──────────────────────────────────────────────────────────────────
+fetchAndRender();
+</script>
+</body>
+</html>

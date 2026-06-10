@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Join Zenzele Smart Market</title>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../css/style.css"/>
+</head>
+<body>
+<nav class="navbar">
+  <div class="nav-inner">
+    <a href="../index.html" class="logo"><span class="logo-z">Z</span>enzele <span class="logo-tag">Smart Market</span></a>
+    <div class="nav-links"><a href="login.html">Already have an account? Login →</a></div>
+  </div>
+</nav>
+<div class="auth-page">
+  <div class="auth-card" style="max-width:560px">
+    <h2>🚀 Join the Market</h2>
+    <p class="sub">Create your entrepreneur profile and start building your future.</p>
+    <div id="alertBox"></div>
+
+    <div class="form-group"><label>Full Name *</label><input type="text" id="name" placeholder="e.g. Thabo Mokoena"/></div>
+    <div class="form-group"><label>Email Address *</label><input type="email" id="email" placeholder="your@email.com"/></div>
+    <div class="form-group"><label>Password * <small style="color:var(--text-muted)">(min 8 characters)</small></label><input type="password" id="password" placeholder="Min 8 characters"/></div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+      <div class="form-group"><label>Country *</label>
+        <select id="country">
+          <option value="">Select country</option>
+          <option value="ZA">🇿🇦 South Africa</option><option value="ZW">🇿🇼 Zimbabwe</option>
+          <option value="KE">🇰🇪 Kenya</option><option value="NG">🇳🇬 Nigeria</option>
+          <option value="IN">🇮🇳 India</option><option value="BR">🇧🇷 Brazil</option>
+          <option value="US">🇺🇸 USA</option><option value="GB">🇬🇧 UK</option>
+          <option value="OTHER">🌍 Other</option>
+        </select>
+      </div>
+      <div class="form-group"><label>City / Town *</label><input type="text" id="city" placeholder="e.g. Johannesburg"/></div>
+    </div>
+    <div class="form-group"><label>Business / Hustle Category *</label>
+      <select id="category">
+        <option value="">Select category</option>
+        <option>Carpentry</option><option>Digital Marketing</option><option>Coding / Tech</option>
+        <option>Fashion & Clothing</option><option>Music Production</option><option>Farming / Agriculture</option>
+        <option>Graphic Design</option><option>Photography</option><option>Food & Catering</option>
+        <option>Education & Tutoring</option><option>Finance & Bookkeeping</option><option>Other</option>
+      </select>
+    </div>
+    <div class="form-group"><label>Your Story / Bio *</label><textarea id="bio" placeholder="Tell people who you are, what you do, and what help you need..."></textarea></div>
+    <div class="form-group"><label>Skills <small style="color:var(--text-muted)">(comma-separated)</small></label><input type="text" id="skills" placeholder="e.g. Woodwork, Carpentry, Furniture"/></div>
+    <div class="form-group"><label>Cardano Wallet Address <small style="color:var(--text-muted)">(optional)</small></label><input type="text" id="wallet" placeholder="addr1q..."/></div>
+    <div class="form-group"><label>Training / Mentorship Wanted</label><input type="text" id="training" placeholder="e.g. Business Management, Coding"/></div>
+    <div class="form-group" style="display:flex;align-items:center;gap:10px">
+      <input type="checkbox" id="openForWork" style="width:auto"/>
+      <label for="openForWork" style="margin:0">I am open for work / collaborations</label>
+    </div>
+    <button class="btn-primary btn-full" id="submitBtn" onclick="doRegister()">Create My Profile 🚀</button>
+    <div class="form-footer">Already have an account? <a href="login.html">Login here</a></div>
+  </div>
+</div>
+
+<script src="../js/api-client.js"></script>
+<script src="../js/main.js"></script>
+<script>
+async function doRegister() {
+  const alertBox  = document.getElementById('alertBox');
+  const submitBtn = document.getElementById('submitBtn');
+  const name      = document.getElementById('name').value.trim();
+  const email     = document.getElementById('email').value.trim();
+  const password  = document.getElementById('password').value;
+  const country   = document.getElementById('country').value;
+  const city      = document.getElementById('city').value.trim();
+  const category  = document.getElementById('category').value;
+  const bio       = document.getElementById('bio').value.trim();
+
+  alertBox.innerHTML = '';
+  if (!name || !email || !password || !country || !category || !bio) {
+    alertBox.innerHTML = '<div class="alert alert-error">Please fill in all required fields.</div>'; return;
+  }
+  if (password.length < 8) {
+    alertBox.innerHTML = '<div class="alert alert-error">Password must be at least 8 characters.</div>'; return;
+  }
+
+  submitBtn.disabled = true;
+  submitBtn.textContent = 'Creating account...';
+
+  const formData = {
+    name, email, password, country, city, category, bio,
+    skills:          document.getElementById('skills').value,
+    wallet:          document.getElementById('wallet').value.trim(),
+    training_wanted: document.getElementById('training').value.trim(),
+    open_for_work:   document.getElementById('openForWork').checked
+  };
+
+  const result = await registerUser(formData);
+
+  if (result.success) {
+    alertBox.innerHTML = '<div class="alert alert-success">✅ Profile created! Redirecting...</div>';
+    setTimeout(() => window.location.href = 'dashboard.html', 1200);
+  } else {
+    alertBox.innerHTML = `<div class="alert alert-error">${result.error}</div>`;
+    submitBtn.disabled = false;
+    submitBtn.textContent = 'Create My Profile 🚀';
+  }
+}
+</script>
+</body>
+</html>
