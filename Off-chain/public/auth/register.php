@@ -8,24 +8,7 @@
 </head>
 <body>
 
-    <header>
-        <nav class="container">
-            <div class="logo">
-                <strong>Zenzele</strong> <span class="tagline" data-i18n="nav_tagline">Smart Market</span>
-            </div>
-            <div class="lang-selector">
-                <select id="langSelect">
-                    <option value="en">English</option>
-                    <option value="zu">isiZulu</option>
-                    <option value="xh">isiXhosa</option>
-                    <option value="st">Sesotho</option>
-                    <option value="tn">Setswana</option>
-                    <option value="af">Afrikaans</option>
-                    <option value="sw">Swahili</option>
-                </select>
-            </div>
-        </nav>
-    </header>
+    <?php include '../header/indexheader.html'; ?>
 
     <main class="container">
         <div class="auth-box">
@@ -49,7 +32,7 @@
                     <label for="regEmail" data-i18n="label_email">Adresse E-mail</label>
                     <input type="email" id="regEmail" required placeholder="Ex: amina@example.com">
                 </div>
-
+ 
                 <div class="form-group">
                     <label for="regPassword" data-i18n="label_password">Mot de passe</label>
                     <input type="password" id="regPassword" required minlength="8" placeholder="8 caractères minimum">
@@ -85,7 +68,7 @@
 
             <p class="auth-redirect">
                 <span data-i18n="text_have_account">Déjà un compte ?</span> 
-                <a href="login.html" data-i18n="link_login">Connectez-vous ici</a>
+                <a href="login.php" data-i18n="link_login">Connectez-vous ici</a>
             </p>
         </div>
     </main>

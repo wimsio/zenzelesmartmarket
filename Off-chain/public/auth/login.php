@@ -8,24 +8,7 @@
 </head>
 <body>
 
-    <header>
-        <nav class="container">
-            <div class="logo">
-                <strong>Zenzele</strong> <span class="tagline" data-i18n="nav_tagline">Smart Market</span>
-            </div>
-            <div class="lang-selector">
-                <select id="langSelect">
-                    <option value="en">English</option>
-                    <option value="zu">isiZulu</option>
-                    <option value="xh">isiXhosa</option>
-                    <option value="st">Sesotho</option>
-                    <option value="tn">Setswana</option>
-                    <option value="af">Afrikaans</option>
-                    <option value="sw">Swahili</option>
-                </select>
-            </div>
-        </nav>
-    </header>
+    <?php include '../header/indexheader.html'; ?>
 
     <main class="container">
         <div class="auth-box">
@@ -54,7 +37,7 @@
 
             <p class="auth-redirect">
                 <span data-i18n="text_no_account">Pas de compte ?</span> 
-                <a href="register.html" data-i18n="link_register">Inscrivez-vous ici</a>
+                <a href="register.php" data-i18n="link_register">Inscrivez-vous ici</a>
             </p>
         </div>
     </main>

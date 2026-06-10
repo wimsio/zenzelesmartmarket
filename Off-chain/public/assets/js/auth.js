@@ -76,7 +76,7 @@ const ZenzeleAuthExtended = {
                 // Optionnel : stocker le statut de connexion
                 localStorage.setItem('zenzele_connected', 'true');
                 alert("Connexion réussie !");
-                window.location.href = '../../public/acceuil.html'; // Redirection vers la page de d'acceuil
+                window.location.href = '../../public/acceuil.php'; // Redirection vers la page de d'acceuil
             } else {
                 alert("Échec de la connexion : " + result.message);
             }
@@ -133,7 +133,7 @@ const ZenzeleAuthExtended = {
 
             if (result.success) {
                 alert("Inscription réussie ! Vous pouvez maintenant vous connecter.");
-                window.location.href = 'login.html'; // Redirection vers la page de connexion
+                window.location.href = 'login.php'; // Redirection vers la page de connexion
             } else {
                 alert("Échec de l'inscription : " + result.message);
             }

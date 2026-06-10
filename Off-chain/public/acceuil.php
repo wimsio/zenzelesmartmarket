@@ -1,3 +1,7 @@
+<?php 
+require_once 'header/username.php';
+?>
+
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -27,20 +31,20 @@
     </div>
 
     <nav class="sidebar-nav">
-      <div class="sidebar-section">Général</div>
+      <div class="sidebar-section">General</div>
 
-      <a href="dashboard.html" class="sidebar-item active">
+      <a href="acceuil.html" class="sidebar-item active">
         <i class="ti ti-layout-dashboard"></i>
         Dashboard
       </a>
-      <a href="formations.html" class="sidebar-item">
+      <a href="training.php" class="sidebar-item">
         <i class="ti ti-school"></i>
-        Formations
+        Trainings
         <span class="sidebar-badge">3</span>
       </a>
-      <a href="dons.html" class="sidebar-item">
+      <a href="donations.php" class="sidebar-item">
         <i class="ti ti-heart"></i>
-        Dons
+        Donations
       </a>
       <a href="certificats.html" class="sidebar-item">
         <i class="ti ti-certificate"></i>
@@ -49,7 +53,7 @@
 
       <div class="sidebar-section">Marché</div>
 
-      <a href="nfts.html" class="sidebar-item">
+      <a href="nfts.php" class="sidebar-item">
         <i class="ti ti-photo"></i>
         NFTs
       </a>
@@ -59,25 +63,25 @@
       </a>
       <a href="communaute.html" class="sidebar-item">
         <i class="ti ti-social"></i>
-        Communauté
+        Communauty
       </a>
 
       <div class="sidebar-section">Compte</div>
 
-      <a href="profil.html" class="sidebar-item">
+      <a href="profile2.php" class="sidebar-item">
         <i class="ti ti-user"></i>
         Profil
       </a>
-      <a href="parametres.html" class="sidebar-item">
+      <a href="auth/logout.php" class="sidebar-item">
         <i class="ti ti-settings"></i>
-        Paramètres
+        Logout
       </a>
     </nav>
 
     <div class="sidebar-user">
       <div class="sidebar-avatar">AK</div>
       <div class="sidebar-user-info">
-        <div class="sidebar-user-name">Aminata Koné</div>
+        <div class="sidebar-user-name"> <?php echo isset($_SESSION['username']) ? $_SESSION['username'] : 'Invité'; ?> </div>
         <div class="sidebar-user-role">Apprenante Pro</div>
       </div>
       <div class="sidebar-online"></div>
@@ -92,7 +96,7 @@
 
     <!-- Topbar -->
     <div class="topbar">
-      <div class="topbar-title">Bonjour, Aminata 👋</div>
+      <div class="topbar-title">Bonjour, <?php echo isset($_SESSION['username']) ? $_SESSION['username'] : 'Invité'; ?> 👋</div>
       <div class="topbar-date">Mardi, 26 mai 2026</div>
       <div class="topbar-actions">
         <div class="topbar-btn notif"><i class="ti ti-bell"></i></div>
