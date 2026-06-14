@@ -2,7 +2,9 @@
 
 ## “Be Self-Reliant”
 
-**Zenzele Smart Market** is an open-source, web-based entrepreneur marketplace built on the secure and scalable **Cardano blockchain**. The word **Zenzele** means **“be self-reliant”**, and the project is designed to help unemployed people, small business owners, freelancers, creators, students, artisans, and everyday hustlers from **any country** promote themselves, find support, receive funding, request training, and grow real economic activity. 
+**Zenzele Smart Market** is an open-source, web-based entrepreneur marketplace built on the secure, compliant, privacy and scalable **Cardano and Midnight blockchains**. The word **Zenzele** means **“be self-reliant”**, and the project is designed to help unemployed people, small business owners, freelancers, creators, students, artisans, and everyday hustlers from **any country** promote themselves, find support, receive funding, request training, and grow real economic activity. Unemployment affects all economies world wide. Entrepreneurship via Cardano and Midnight blockchains is one of the solutions.
+
+[Product Specification](https://github.com/wimsio/zenzelesmartmarket/blob/main/docs/product-specification.md)
 
 [Google Hussle Academy](https://www.itweb.co.za/article/google-opens-hustle-academy-2026-registration/kLgB17ezVOaM59N4)
 
