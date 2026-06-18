@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<style>
+    .formulaire-3-colonnes {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr); /* Divise en 3 colonnes égales */
+  gap: 20px; /* Espace entre les champs */
+  max-width: 900px;
+  margin: 200px auto;
+  padding: 20px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+}
+
+.champ {
+  display: flex;
+  flex-direction: column;
+}
+
+.champ label {
+  margin-bottom: 5px;
+  font-weight: bold;
+}
+
+.champ input {
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+.bouton-soumettre {
+  grid-column: 1 / -1; /* Le bouton prend toute la largeur des 3 colonnes */
+  padding: 12px;
+  background-color: #007BFF;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+</style>
+
+<body>
+    <form action="/traitement" method="POST" class="formulaire-3-colonnes">
+  <div class="champ">
+    <label for="nom">Nom :</label>
+    <input type="text" id="nom" name="nom" required>
+  </div>
+  
+  <div class="champ">
+    <label for="prenom">Prénom :</label>
+    <input type="text" id="prenom" name="prenom" required>
+  </div>
+  
+  <div class="champ">
+    <label for="email">Email :</label>
+    <input type="email" id="email" name="email" required>
+  </div>
+  
+  <div class="champ">
+    <label for="telephone">Téléphone :</label>
+    <input type="tel" id="telephone" name="telephone">
+  </div>
+
+  <div class="champ">
+    <label for="ville">Ville :</label>
+    <input type="text" id="ville" name="ville">
+  </div>
+
+  <div class="champ">
+    <label for="code_postal">Code Postal :</label>
+    <input type="text" id="code_postal" name="code_postal">
+  </div>
+
+  <!-- Un bouton qui s'étend sur toute la largeur -->
+  <button type="submit" class="bouton-soumettre">Envoyer</button>
+</form>
+
+</body>
+</html>
